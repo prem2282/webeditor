@@ -1,17 +1,16 @@
 <template>
   <q-page class="flex flex-center">
-    <EditorPage/>
+    <CodeListPage/>
   </q-page>
 </template>
 
 <script>
 
-import EditorPage from '../components/EditorPage'
-
+import CodeListPage from '../components/CodeListPage'
 export default {
-  name: 'PageIndex',
+  name: 'CodeList',
   components: {
-    EditorPage: EditorPage
+    CodeListPage: CodeListPage
   }
 }
 </script>

@@ -2,16 +2,16 @@
   <AceEditor
     v-model="mycontent"
     @init="editorInit"
-    lang="html"
+    :lang=this.editorBox
     theme="monokai"
     width="100%"
-    height="50vh"
+    :height="this.height?this.height:'90vh'"
     :options="{
       enableBasicAutocompletion: true,
       enableLiveAutocompletion: true,
       fontSize: 15,
       highlightActiveLine: true,
-      enableSnippets: false,
+      enableSnippets: true,
       showLineNumbers: true,
       tabSize: 2,
       showPrintMargin: false,
@@ -40,7 +40,7 @@ export default {
     }
   },
 
-  props: ['pageContent', 'editorBox', 'itemIndex'],
+  props: ['pageContent', 'editorBox', 'vertView', 'height'],
   components: {
     AceEditor
   },
@@ -61,11 +61,16 @@ export default {
       },
       // setter
       set: function (newValue) {
-        const payload = {
-          htmlContent: this.editorBox === 'html' ? newValue : this.pageContent.htmlContent,
-          cssContent: this.editorBox === 'css' ? newValue : this.pageContent.cssContent,
-          jsContent: this.editorBox === 'js' ? newValue : this.pageContent.jsContent,
-          itemIndex: this.itemIndex
+        const payload = this.pageContent
+
+        if (this.editorBox === 'html') {
+          payload.htmlContent = newValue
+        }
+        if (this.editorBox === 'css') {
+          payload.cssContent = newValue
+        }
+        if (this.editorBox === 'js') {
+          payload.jsContent = newValue
         }
         console.log(payload)
         this.updatePageContent(payload)
@@ -83,7 +88,7 @@ export default {
       require('brace/mode/javascript') // language
       require('brace/mode/css')
       require('brace/theme/monokai')
-      require('brace/snippets/javascript') // snippet
+      // require('brace/snippets/javascript') // snippet
     },
     updateContent: function (mycontent) {
       console.log('data will be updated with:', mycontent)
