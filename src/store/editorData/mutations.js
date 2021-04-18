@@ -1,35 +1,34 @@
+// import { pageContent } from './getters'
+
+function updateOutputValue (state) {
+  const headContent = state.pageContent.code_1
+  const htmlContent = state.pageContent.code_2
+  const cssContent = state.pageContent.code_3
+  const jsContent = state.pageContent.code_4
+
+  const outputValue = '<html><head>' + headContent + '</head><style>' + cssContent + '</style><body>' + htmlContent + '<script type="text/javascript">' + jsContent + '</script></body></html>'
+
+  console.log('updateOutputValue', outputValue)
+  state.outputValue = outputValue
+}
+
 export function updatePageContent (state, payload) {
-  console.log('payload in mutation', payload)
-  console.log('codeListIndex in mutation', payload.codeListIndex)
-  const cssContent = payload.cssContent
-  const htmlContent = payload.htmlContent
-  const jsContent = payload.jsContent
-  const cdnContent = '<script src="https://unpkg.com/konva@7.0.3/konva.min.js"></script>'
+  const headContent = payload.code_1
+  const htmlContent = payload.code_2
+  const cssContent = payload.code_3
+  const jsContent = payload.code_4
 
-  const outputValue = '<html><head>' + cdnContent + '</head><style>' + cssContent + '</style><body>' + htmlContent + '<script type="text/javascript">' + jsContent + '</script></body></html>'
+  const outputValue = '<html><head>' + headContent + '</head><style>' + cssContent + '</style><body>' + htmlContent + '<script type="text/javascript">' + jsContent + '</script></body></html>'
 
+  console.log('updatePageContent', payload)
+  state.outputValue = outputValue
   console.log(outputValue)
-  const pageContent = {
-    htmlContent: payload.htmlContent,
-    cssContent: payload.cssContent,
-    jsContent: payload.jsContent,
-    title: payload.title,
-    id: payload.id,
-    outputValue: outputValue,
-    codeListIndex: payload.codeListIndex,
-    helpText: payload.helpText
-  }
 
-  console.log(pageContent)
-  state.pageContent = pageContent
+  state.pageContent = payload
 }
 
-export function updateHelpText (state, payload) {
-  state.pageContent.helpText = payload
-}
-
-export function updateTitle (state, payload) {
-  state.pageContent.title = payload
+export function updateCodeListIndex (state, payload) {
+  state.codeListIndex = payload
 }
 
 export function updateStoredData (state, payload) {
@@ -50,8 +49,22 @@ export function addToCodeList (state, payload) {
   state.codeList.push(payload)
 }
 
+export function deleteFromCodeList (state, payload) {
+  console.log('index to delete', payload)
+  state.codeList.splice(payload, 1)
+}
+
 export function updateToCodeList (state, { payload, index }) {
   state.codeList[index] = payload
+}
+
+export function updateHelpText (state, payload) {
+  state.pageContent.description_1 = payload
+}
+
+export function updateCDNText (state, payload) {
+  state.pageContent.code_1 = payload
+  updateOutputValue(state)
 }
 
 export function setView (state, payload) {

@@ -11,7 +11,7 @@
       enableLiveAutocompletion: true,
       fontSize: 15,
       highlightActiveLine: true,
-      enableSnippets: true,
+      enableSnippets: false,
       showLineNumbers: true,
       tabSize: 2,
       showPrintMargin: false,
@@ -49,13 +49,13 @@ export default {
       get: function () {
         let value = ''
         if (this.editorBox === 'html') {
-          value = this.pageContent.htmlContent
+          value = this.pageContent.code_2
         }
         if (this.editorBox === 'css') {
-          value = this.pageContent.cssContent
+          value = this.pageContent.code_3
         }
         if (this.editorBox === 'js') {
-          value = this.pageContent.jsContent
+          value = this.pageContent.code_4
         }
         return value
       },
@@ -64,13 +64,13 @@ export default {
         const payload = this.pageContent
 
         if (this.editorBox === 'html') {
-          payload.htmlContent = newValue
+          payload.code_2 = newValue
         }
         if (this.editorBox === 'css') {
-          payload.cssContent = newValue
+          payload.code_3 = newValue
         }
         if (this.editorBox === 'js') {
-          payload.jsContent = newValue
+          payload.code_4 = newValue
         }
         console.log(payload)
         this.updatePageContent(payload)

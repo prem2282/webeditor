@@ -8,7 +8,7 @@
       <q-editor class="helpTextClass"
         v-model="helpText"
         :dense="$q.screen.lt.md"
-        toolbar-bg="black"
+        toolbar-bg="white"
         :toolbar="[
           [
             {
@@ -109,7 +109,7 @@ export default {
     ...mapGetters('editorData', ['showHelp', 'pageContent']),
     helpText: {
       get: function () {
-        return this.pageContent.helpText
+        return this.pageContent.description_1 ? this.pageContent.description_1 : ''
       },
       set: function (newValue) {
         this.updateHelpText(newValue)
@@ -195,8 +195,8 @@ export default {
   width: 60vw;
   min-height: 25vh;
   opacity: 80%;
-  background-color:darkslateblue;
-  color: white;
+  background-color: aliceblue;
+  color: black;
   font-family: Arial, Helvetica, sans-serif;
 }
 

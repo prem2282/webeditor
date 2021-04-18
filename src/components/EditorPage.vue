@@ -4,29 +4,58 @@
             <div  class="col-1">
               <q-btn  class="q-ma-xs" @click='goBack' dense round color="primary" icon="arrow_back" />
             </div>
-            <div  v-if="editorMode"  class="col">
-              <q-btn class="q-ma-xs" no-caps color='grey-10' text-color="white">{{this.title}}</q-btn>
-              <q-popup-edit v-model="title" buttons>
-                <q-input v-model="title" dense autofocus counter />
-              </q-popup-edit>
+            <div  v-if="editorMode"  class="col-2">
+              <q-btn  class="q-ma-xs" label="data" color="primary" @click="titleShow = true" />
+              <q-dialog v-model="titleShow">
+                <q-card>
+                  <q-card-section>
+                    <div class="text-h6">Update Title</div>
+                    <q-input v-model="subject_" label="Subject" placeholder="" hint="" dense="dense" />
+                    <q-input v-model="level_" label="Level" placeholder="" hint="" dense="dense" />
+                    <q-input v-model="section_" label="Section" placeholder="" hint="" dense="dense" />
+                    <q-input v-model="seq_num_" label="Lesson num" placeholder="" hint="" dense="dense" />
+                    <q-input v-model="title_" label="Title" placeholder="" hint="" dense="dense" />
+                  </q-card-section>
+
+                  <q-card-actions align="right">
+                    <q-btn flat label="OK" color="primary" @click='updateTitleData' v-close-popup />
+                  </q-card-actions>
+                </q-card>
+              </q-dialog>
             </div>
-            <div v-else class='col-3'>
-              <div class='titleClass'>{{this.title}}</div>
+            <div v-else class='col-2'>
+              <q-btn  class="q-ma-xs" :label="title_" color="primary"/>
             </div>
-            <div class="col">
+
+            <div class="col-1">
+              <q-dialog v-model="cdnShow">
+                <q-card style="width: 50vw">
+                  <q-card-section>
+                    <div class="text-p1">Add Javascript CDN</div>
+                    <q-input v-model="head_" label="js cdn" placeholder="" hint="" dense="dense" />
+                  </q-card-section>
+
+                  <q-card-actions align="right">
+                    <q-btn flat label="OK" color="primary" @click='updateCDNText(head_)' v-close-popup />
+                  </q-card-actions>
+                </q-card>
+              </q-dialog>
+            </div>
+            <div class="col-3">
               <div class="row justify-center">
                 <div v-if='editorMode'>
                    <HelpTextEditor
-                    :helpText= this.pageContent.helpText
+                    :helpText= this.pageContent.description_1
                     :saveHelpText= this.saveHelpText
                     :helpExit= this.helpExit
                    />
                 </div>
                 <div v-else>
                   <HelpTextViewer
-                    :helpText = this.pageContent.helpText
+                    :helpText = this.pageContent.description_1
                   />
                 </div>
+                <q-btn class="q-ma-xs" round dense icon='add' color="primary" @click="cdnShow = true" />
                 <q-btn  class="q-ma-xs" v-model='showHTML' @click='showHTML=!showHTML' :color="showHTML ? 'red-8' : 'info'" label="html"/>
                 <q-btn  class="q-ma-xs" v-model='showCSS' @click='showCSS=!showCSS' :color="showCSS ? 'cyan-8' : 'info'" label="css"/>
                 <q-btn  class="q-ma-xs" v-model='showJS' @click='showJS=!showJS' :color="showJS ? 'lime-8' : 'info'" label="js"/>
@@ -96,7 +125,7 @@
                 </div>
             </div>
             <div>
-                <iframe class="resultBox" :class="vertView?'vertView':'horView'" :srcDoc="this.pageContent.outputValue" frameborder="0"></iframe>
+                <iframe class="resultBox" :class="vertView?'vertView':'horView'" :srcDoc="this.outputValue" frameborder="0"></iframe>
             </div>
         </div>
     </q-page>
@@ -113,38 +142,84 @@ import axios from 'axios'
 export default {
   data () {
     return {
+      subject_: '',
+      level_: '',
+      section_: '',
+      seq_num_: '',
+      title_: '',
+      head_: '',
       showHTML: false,
       showCSS: false,
       showJS: false,
       fullViewHtml: false,
       fullViewCss: false,
-      fullViewJs: false
+      fullViewJs: false,
+      titleShow: false,
+      cdnShow: false
     }
   },
   computed: {
-    ...mapGetters('editorData', ['pageContent', 'selectedCode', 'codeList', 'vertView', 'showHelp', 'editorMode']),
+    ...mapGetters('editorData', ['pageContent', 'selectedCode', 'codeList', 'vertView', 'showHelp', 'editorMode', 'outputValue']),
     showCodeBlocks: function () {
       return this.showHTML || this.showCSS || this.showJS
     },
-    outputValue: function () {
-      return this.pageContent.outputValue
-    },
-    title: {
-      get: function () {
-        return this.pageContent.title
-      },
-      set: function (newValue) {
-        this.updateTitle(newValue)
-      }
-    },
-    helpText: {
-      get: function () {
-        return ''
-      },
-      set: function (newValue) {
-        console.log(newValue)
-      }
-    },
+    // subject: {
+    //   get: function () {
+    //     console.log('in subject set', this.pageContent.subject)
+    //     return this.pageContent.subject
+    //   },
+    //   set: function (newValue) {
+    //     this.updateSubject(newValue)
+    //   }
+    // },
+    // level: {
+    //   get: function () {
+    //     return this.pageContent.level
+    //   },
+    //   set: function (newValue) {
+    //     this.updateLevel(newValue)
+    //   }
+    // },
+    // section: {
+    //   get: function () {
+    //     return this.pageContent.section
+    //   },
+    //   set: function (newValue) {
+    //     this.updateSection(newValue)
+    //   }
+    // },
+    // seq_num: {
+    //   get: function () {
+    //     return this.pageContent.seq_num
+    //   },
+    //   set: function (newValue) {
+    //     this.updateSeqNum(newValue)
+    //   }
+    // },
+    // title: {
+    //   get: function () {
+    //     return this.pageContent.title
+    //   },
+    //   set: function (newValue) {
+    //     this.updateTitle(newValue)
+    //   }
+    // },
+    // helpText: {
+    //   get: function () {
+    //     return this.pageContent.description_1
+    //   },
+    //   set: function (newValue) {
+    //     console.log(newValue)
+    //   }
+    // },
+    // head: {
+    //   get: function () {
+    //     return this.pageContent.headContent
+    //   },
+    //   set: function (newValue) {
+    //     this.updateHead(newValue)
+    //   }
+    // },
     htmlBoxClass: function () {
       if (!this.showHTML) {
         return 'boxclose'
@@ -191,36 +266,54 @@ export default {
     HelpTextEditor,
     HelpTextViewer
   },
+
   methods: {
-    ...mapActions('editorData', ['updatePageContent', 'updateTitle', 'addToCodeList', 'updateToCodeList', 'setView', 'updateShowHelp']),
+    ...mapActions('editorData', ['updatePageContent', 'updateCDNText', 'addToCodeList', 'updateToCodeList', 'setView', 'updateShowHelp']),
+
+    updateTempState: function (pageContent) {
+      console.log('in updateTempState', pageContent)
+      this.subject_ = pageContent.subject
+      this.level_ = pageContent.level
+      this.section_ = pageContent.section
+      this.seq_num_ = pageContent.seq_num
+      this.title_ = pageContent.title
+      this.head_ = pageContent.code_1
+    },
+
+    updateTitleData: function () {
+      this.pageContent.subject = this.subject_
+      this.pageContent.level = this.level_
+      this.pageContent.section = this.section_
+      this.pageContent.seq_num = this.seq_num_
+      this.pageContent.title = this.title_
+      this.pageContent.code_1 = this.head_
+      this.updatePageContent(this.pageContent)
+    },
+
     updateRecord: async function () {
       console.log('to update:', this.pageContent)
-      const createUrl = 'https://prem2282.pythonanywhere.com/api/QuestionList/create'
-      let updateUrl = 'https://prem2282.pythonanywhere.com/api/QuestionList/edit/'
+      const createUrl = 'https://prem2282.pythonanywhere.com/api/CodeList/create'
+      let updateUrl = 'https://prem2282.pythonanywhere.com/api/CodeList/edit/'
+
       const mydata = {
         id: this.pageContent.id,
-        Q_image: '',
-        Question: this.pageContent.helpText,
-        QuestionType: '2',
-        answer_1: this.pageContent.htmlContent,
-        answer_1_ind: false,
-        answer_2: this.pageContent.cssContent,
-        answer_2_ind: false,
-        answer_3: this.pageContent.jsContent,
-        answer_3_ind: false,
-        answer_4: this.pageContent.title,
-        answer_4_ind: false,
-        answer_5: '',
-        answer_5_ind: false,
-        answer_6: '',
-        answer_6_ind: false,
-        board: 'Frontend',
-        category: 'Code',
-        difficulty: 1,
-        lessonNum: 1,
-        marks: 1,
-        standard: 'CSS',
-        subject: 'CSS Basics'
+        subject: this.pageContent.subject,
+        level: this.pageContent.level,
+        section: this.pageContent.section,
+        seq_num: this.pageContent.seq_num,
+        title: this.pageContent.title,
+        contributor: this.pageContent.contributor,
+        description_1: this.pageContent.description_1,
+        description_2: this.pageContent.description_2,
+        description_3: this.pageContent.description_3,
+        code_1: this.pageContent.code_1,
+        code_1_type: 'head',
+        code_2: this.pageContent.code_2,
+        code_2_type: 'html',
+        code_3: this.pageContent.code_3,
+        code_3_type: 'css',
+        code_4: this.pageContent.code_4,
+        code_4_type: 'js'
       }
 
       if (mydata.id > 0) {
@@ -231,30 +324,36 @@ export default {
             console.log(res)
             if (res.status === 200) {
               this.updatePageContent(this.pageContent)
-              this.updateToCodeList({ payload: mydata, index: this.pageContent.codeListIndex })
+              this.updateTempState(this.pageContent)
+              this.updateToCodeList({ payload: mydata, index: this.codeListIndex })
               console.log('updated')
+              this.updatedMessage('Document Updated')
             } else {
               console.log('not updated')
             }
           })
       } else {
+        console.log('before post', mydata)
         await axios
           .post(createUrl, mydata)
           .then(res => {
             console.log(res)
             if (res.status === 201) {
-              console.log('created')
-              const payload = {
-                htmlContent: this.pageContent.htmlContent,
-                cssContent: this.pageContent.cssContent,
-                jsContent: this.pageContent.jsContent,
-                title: this.pageContent.title,
-                helpText: this.pageContent.helpText,
-                id: res.data.id
-              }
-              console.log(payload)
-              this.updatePageContent(payload)
-              this.addToCodeList(mydata)
+              // console.log('created')
+              // console.log('res.data', res.data)
+              // const payload = {
+              //   htmlContent: this.pageContent.htmlContent,
+              //   cssContent: this.pageContent.cssContent,
+              //   jsContent: this.pageContent.jsContent,
+              //   headContent: this.pageContent.headContent,
+              //   title: this.pageContent.title,
+              //   helpText: this.pageContent.helpText,
+              //   id: res.data.id
+              // }
+              // console.log(payload)
+              this.updatePageContent(res.data)
+              this.addToCodeList(res.data)
+              this.updatedMessage('Document Created')
             } else {
               console.log('not updated')
             }
@@ -269,6 +368,15 @@ export default {
     },
     saveHelpText: function () {
       console.log('saving text')
+    },
+    updatedMessage (message) {
+      this.$q.notify({
+        message: message,
+        color: 'green',
+        timeout: 1000,
+        position: 'top-right',
+        icon: 'save'
+      })
     }
 
   },
@@ -276,6 +384,10 @@ export default {
     this.showHTML = true
     this.showCSS = true
     this.showJS = true
+    console.log('in mounted', this.pageContent)
+    this.updateTempState(this.pageContent)
+    // this.subject_ = this.codeListIndex > 0 ? this.codeList[this.codeListIndex].subject : ''
+    // console.log('subject_ in mounted', this.subject_)
   }
 
 }

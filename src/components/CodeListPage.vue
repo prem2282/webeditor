@@ -5,10 +5,25 @@
     </div>
     <div :v-if="showData" >
         <div class="row" v-for="(code, index) in this.codeList" :key="code.id" :id="code.id">
-            <div class="q-pa-sm q-ma-sm bg-red-1">{{code.subject}}</div>
-            <div class="q-pa-sm q-ma-sm bg-red-1">{{code.answer_4}}</div>
+            <div class="q-pa-sm q-ma-sm bg-red-1">{{code.subject}}  {{code.level}}  {{code.section}} {{code.seq_num}}</div>
+            <div class="q-pa-sm q-ma-sm bg-red-1">{{code.title}}</div>
             <q-btn class='q-ma-sm' @click="editSelected(index)">Edit</q-btn>
             <q-btn class='q-ma-sm' @click="viewSelected(index)">View</q-btn>
+            <q-btn class='q-ma-sm' @click="deletePrompt(index)">delete</q-btn>
+
+            <q-dialog v-model="deleteConfirm" persistent>
+              <q-card>
+                <q-card-section class="row items-center">
+                  <q-avatar icon="delete" color="primary" text-color="white" />
+                  <span class="q-ml-sm">Are you sure to delete</span>
+                </q-card-section>
+
+                <q-card-actions align="right">
+                  <q-btn flat label="Cancel" color="primary" @click='cancelDelete' v-close-popup />
+                  <q-btn flat label="Yes" color="danger" @click='performDelete' v-close-popup />
+                </q-card-actions>
+              </q-card>
+            </q-dialog>
         </div>
     </div>
   </q-page>
@@ -17,9 +32,16 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import axios from 'axios'
-const targetUrl = 'https://prem2282.pythonanywhere.com/api/QuestionList/'
+const targetUrl = 'https://prem2282.pythonanywhere.com/api/CodeList/'
 
 export default {
+
+  data () {
+    return {
+      deleteConfirm: false,
+      deleteMarkedIndex: null
+    }
+  },
   computed: {
     ...mapGetters('editorData', ['codeList', 'showHelp']),
     showData: function () {
@@ -31,33 +53,18 @@ export default {
     }
   },
   mounted: function () {
-    this.getData()
+    this.getCodeList()
   },
   methods: {
-    ...mapActions('editorData', ['updateCodeList', 'updateSelectedCode', 'updatePageContent', 'updateEditorMode', 'updateShowHelp']),
-    getData: async function () {
-      const group = {
-        category: 'Code',
-        board: 'Frontend',
-        standard: 'CSS',
-        subject: 'CSS Basics',
-        lessonNum: 1
-      }
+    ...mapActions('editorData', ['updateCodeList', 'updateCodeListIndex', 'updateSelectedCode', 'updatePageContent', 'updateEditorMode', 'updateShowHelp', 'deleteFromCodeList']),
+    getCodeList: async function () {
       if (this.codeList.length === 0) {
         await axios
-          .get(targetUrl, {
-            params: {
-              category: group.category,
-              board: group.board,
-              standard: group.standard,
-              subject: group.subject,
-              lessonNum: group.lessonNum
-            }
-          })
+          .get(targetUrl)
           .then(res => {
             const codelist = res.data
             if (res.data.length > 0) {
-              console.log(codelist)
+              console.log('res.data', codelist)
               this.updateCodeList(res.data)
             } else {
               console.log('no data')
@@ -65,45 +72,105 @@ export default {
           })
       }
     },
+
+    getSelectedCode: async function (index) {
+      this.updateSelectedCode(index)
+      const selectedCodeId = this.codeList[index].id
+      const codeURL = targetUrl + selectedCodeId
+      console.log('codeURL', codeURL)
+      if (selectedCodeId > 0) {
+        await axios
+          .get(codeURL)
+          .then(res => {
+            console.log('response in codeURL:', res.data)
+            if (res.data.id === selectedCodeId) {
+              this.updatePageContent(res.data)
+              this.updateCodeListIndex(index)
+              this.updateShowHelp(this.showHelp)
+              this.$router.push({ path: 'editor' })
+            } else {
+              console.log('no data')
+              return null
+            }
+          })
+      }
+    },
+
     editSelected: function (index) {
       const editMode = true
       this.updateEditorMode(editMode)
-      this.codeSelected(index)
+      this.getSelectedCode(index)
     },
     viewSelected: function (index) {
       const editMode = false
       this.updateEditorMode(editMode)
-      this.codeSelected(index)
+      this.getSelectedCode(index)
     },
-    codeSelected: function (index) {
-      this.updateSelectedCode(index)
-      const selectedCodeData = this.codeList[index]
-      const payload = {
-        htmlContent: selectedCodeData.answer_1,
-        cssContent: selectedCodeData.answer_2,
-        jsContent: selectedCodeData.answer_3,
-        id: selectedCodeData.id,
-        title: selectedCodeData.answer_4,
-        helpText: selectedCodeData.Question,
-        codeListIndex: index
-      }
-      console.log(payload)
-      this.updatePageContent(payload)
-      this.updateShowHelp(this.showHelp)
-      this.$router.push({ path: 'editor' })
+
+    deletePrompt: function (index) {
+      this.deleteConfirm = true
+      this.deleteMarkedIndex = index
     },
+
+    cancelDelete: function () {
+      this.deleteConfirm = false
+      this.deleteMarkedIndex = null
+    },
+
+    performDelete: async function () {
+      const deleteId = this.codeList[this.deleteMarkedIndex].id
+      const deleteURL = targetUrl + 'delete/' + deleteId
+
+      await axios
+        .delete(deleteURL)
+        .then(res => {
+          console.log('deleted', res)
+          if (res.status === 204) {
+            this.deleteFromCodeList(this.deleteMarkedIndex)
+            console.log('deleted from codeList')
+            this.deletedMessage('Code Deleted', 'red')
+          } else {
+            console.log('not deleted')
+            this.deletedMessage('Code Not Deleted', 'orange')
+          }
+        })
+    },
+
+    deletedMessage (message, color) {
+      this.$q.notify({
+        message: message,
+        color: color,
+        timeout: 1000,
+        position: 'center',
+        icon: 'save'
+      })
+    },
+
     createNewCode: function () {
       const payload = {
-        htmlContent: '',
-        cssContent: '',
-        jsContent: '',
+        code_1: '',
+        code_1_type: '',
+        code_2: '',
+        code_2_type: '',
+        code_3: '',
+        code_3_type: '',
+        code_4: '',
+        code_4_type: '',
+        contributor: '',
+        description_1: '',
+        description_2: '',
+        description_3: '',
         id: 0,
-        title: '',
-        codeListIndex: '',
-        helpText: ''
+        level: '',
+        section: '',
+        seq_num: '',
+        subject: '',
+        title: ''
       }
       console.log(payload)
       this.updatePageContent(payload)
+      const editMode = true
+      this.updateEditorMode(editMode)
       this.$router.push({ path: 'editor' })
     }
   }
