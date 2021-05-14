@@ -1,4 +1,5 @@
 
+
 const routes = [
   {
     path: '/',
@@ -7,7 +8,8 @@ const routes = [
       { path: '', component: () => import('pages/CodeList.vue') },
       { path: '/editor', component: () => import('components/EditorPage.vue') },
       { path: '/quiz', component: () => import('pages/QuizData.vue') },
-      { path: '/codelist', component: () => import('pages/CodeList.vue') }
+      { path: '/codelist', component: () => import('pages/CodeList.vue') },
+      { path: '/signin', component: () => import('components/GoogleLogin.vue') }
     ]
   },
   {

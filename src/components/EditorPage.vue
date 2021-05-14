@@ -5,8 +5,8 @@
               <q-btn  class="q-ma-xs" @click='goBack' dense round color="primary" icon="arrow_back" />
             </div>
             <div  v-if="editorMode"  class="col-2">
-              <q-btn  class="q-ma-xs" label="data" color="primary" @click="titleShow = true" />
-              <q-dialog v-model="titleShow">
+              <q-btn  class="q-ma-xs" label="title" color="primary" @click="showTitle = true" />
+              <q-dialog v-model="showTitle">
                 <q-card>
                   <q-card-section>
                     <div class="text-h6">Update Title</div>
@@ -28,7 +28,7 @@
             </div>
 
             <div class="col-1">
-              <q-dialog v-model="cdnShow">
+              <q-dialog v-model="showCdn">
                 <q-card style="width: 50vw">
                   <q-card-section>
                     <div class="text-p1">Add Javascript CDN</div>
@@ -44,18 +44,18 @@
             <div class="col-3">
               <div class="row justify-center">
                 <div v-if='editorMode'>
-                   <HelpTextEditor
+                  <HelpTextEditor
                     :helpText= this.pageContent.description_1
                     :saveHelpText= this.saveHelpText
                     :helpExit= this.helpExit
-                   />
+                  />
                 </div>
                 <div v-else>
                   <HelpTextViewer
                     :helpText = this.pageContent.description_1
                   />
                 </div>
-                <q-btn class="q-ma-xs" round dense icon='add' color="primary" @click="cdnShow = true" />
+                <q-btn class="q-ma-xs" round dense icon='add' color="primary" @click="showCdn = true" />
                 <q-btn  class="q-ma-xs" v-model='showHTML' @click='showHTML=!showHTML' :color="showHTML ? 'red-8' : 'info'" label="html"/>
                 <q-btn  class="q-ma-xs" v-model='showCSS' @click='showCSS=!showCSS' :color="showCSS ? 'cyan-8' : 'info'" label="css"/>
                 <q-btn  class="q-ma-xs" v-model='showJS' @click='showJS=!showJS' :color="showJS ? 'lime-8' : 'info'" label="js"/>
@@ -63,12 +63,12 @@
             </div>
             <div class="col">
               <div class='row float-right'>
-                <q-btn dense class="q-ma-xs" @click='updateShowHelp(showHelp)' round color="negative" icon="import_contacts" />
+                <q-btn dense class="q-ma-xs" @click="updateShowHelp(showHelp)" round color="negative" icon="import_contacts" />
                 <q-btn dense class="q-ma-xs" v-model='vertView' round @click='setView(vertView)' color='primary'>
                     <q-icon v-if="vertView" name="view_column" />
                     <q-icon v-else name="vertical_split" />
                 </q-btn>
-                <q-btn  v-if="editorMode" dense class="q-ma-xs" @click='updateRecord' round color="positive" icon="save" />
+                <q-btn  v-if="editorMode" dense class="q-ma-xs" @click='saveClicked' round color="positive" icon="save" />
               </div>
             </div>
 
@@ -154,8 +154,8 @@ export default {
       fullViewHtml: false,
       fullViewCss: false,
       fullViewJs: false,
-      titleShow: false,
-      cdnShow: false
+      showTitle: false,
+      showCdn: false
     }
   },
   computed: {
@@ -163,63 +163,6 @@ export default {
     showCodeBlocks: function () {
       return this.showHTML || this.showCSS || this.showJS
     },
-    // subject: {
-    //   get: function () {
-    //     console.log('in subject set', this.pageContent.subject)
-    //     return this.pageContent.subject
-    //   },
-    //   set: function (newValue) {
-    //     this.updateSubject(newValue)
-    //   }
-    // },
-    // level: {
-    //   get: function () {
-    //     return this.pageContent.level
-    //   },
-    //   set: function (newValue) {
-    //     this.updateLevel(newValue)
-    //   }
-    // },
-    // section: {
-    //   get: function () {
-    //     return this.pageContent.section
-    //   },
-    //   set: function (newValue) {
-    //     this.updateSection(newValue)
-    //   }
-    // },
-    // seq_num: {
-    //   get: function () {
-    //     return this.pageContent.seq_num
-    //   },
-    //   set: function (newValue) {
-    //     this.updateSeqNum(newValue)
-    //   }
-    // },
-    // title: {
-    //   get: function () {
-    //     return this.pageContent.title
-    //   },
-    //   set: function (newValue) {
-    //     this.updateTitle(newValue)
-    //   }
-    // },
-    // helpText: {
-    //   get: function () {
-    //     return this.pageContent.description_1
-    //   },
-    //   set: function (newValue) {
-    //     console.log(newValue)
-    //   }
-    // },
-    // head: {
-    //   get: function () {
-    //     return this.pageContent.headContent
-    //   },
-    //   set: function (newValue) {
-    //     this.updateHead(newValue)
-    //   }
-    // },
     htmlBoxClass: function () {
       if (!this.showHTML) {
         return 'boxclose'
@@ -290,6 +233,16 @@ export default {
       this.updatePageContent(this.pageContent)
     },
 
+    saveClicked: function () {
+      const { subject, level, section, title } = this.pageContent
+
+      if (subject & level & section & title) {
+        this.updateRecord()
+      } else {
+        this.showTitle = true
+      }
+    },
+
     updateRecord: async function () {
       console.log('to update:', this.pageContent)
       const createUrl = 'https://prem2282.pythonanywhere.com/api/CodeList/create'
@@ -327,8 +280,9 @@ export default {
               this.updateTempState(this.pageContent)
               this.updateToCodeList({ payload: mydata, index: this.codeListIndex })
               console.log('updated')
-              this.updatedMessage('Document Updated')
+              this.updatedMessage('Document Updated', true)
             } else {
+              this.updatedMessage('Document Updated', false)
               console.log('not updated')
             }
           })
@@ -353,8 +307,9 @@ export default {
               // console.log(payload)
               this.updatePageContent(res.data)
               this.addToCodeList(res.data)
-              this.updatedMessage('Document Created')
+              this.updatedMessage('Document Created', true)
             } else {
+              this.updatedMessage('Document Not Created', false)
               console.log('not updated')
             }
           })
@@ -364,15 +319,17 @@ export default {
       this.$router.push({ path: 'codelist' })
     },
     helpExit: function () {
-      this.showHelp = false
+      this.updateShowHelp(this.showHelp)
     },
     saveHelpText: function () {
       console.log('saving text')
     },
-    updatedMessage (message) {
+    updatedMessage (message, success) {
+      const color = success ? 'green' : 'red'
+
       this.$q.notify({
         message: message,
-        color: 'green',
+        color: color,
         timeout: 1000,
         position: 'top-right',
         icon: 'save'
@@ -388,8 +345,15 @@ export default {
     this.updateTempState(this.pageContent)
     // this.subject_ = this.codeListIndex > 0 ? this.codeList[this.codeListIndex].subject : ''
     // console.log('subject_ in mounted', this.subject_)
+  },
+  beforeMount: function () {
+    console.log('beforeMount')
+    console.log('codeList', this.codeList)
+    console.log('pageContent', this.pageContent)
+    if (!this.pageContent.description_1 & !this.showHelp) {
+      this.updateShowHelp(this.showHelp)
+    }
   }
-
 }
 
 </script>

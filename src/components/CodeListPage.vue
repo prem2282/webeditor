@@ -4,13 +4,17 @@
         <q-btn class='q-ma-sm' @click="createNewCode">Create New</q-btn>
     </div>
     <div :v-if="showData" >
-        <div class="row" v-for="(code, index) in this.codeList" :key="code.id" :id="code.id">
-            <div class="q-pa-sm q-ma-sm bg-red-1">{{code.subject}}  {{code.level}}  {{code.section}} {{code.seq_num}}</div>
-            <div class="q-pa-sm q-ma-sm bg-red-1">{{code.title}}</div>
-            <q-btn class='q-ma-sm' @click="editSelected(index)">Edit</q-btn>
-            <q-btn class='q-ma-sm' @click="viewSelected(index)">View</q-btn>
-            <q-btn class='q-ma-sm' @click="deletePrompt(index)">delete</q-btn>
-
+        <div class="row pa-sm bg-orange-1" v-for="(code, index) in this.codeList" :key="code.id" :id="code.id">
+          <div class="row">
+            <div class="q-pa-sm q-ma-sm bg-blue-1">{{code.subject}}</div>
+            <div class="q-pa-sm q-ma-sm bg-blue-2">{{code.level}}  {{code.section}} {{code.seq_num}}</div>
+            <div class="q-pa-sm q-ma-sm bg-blue-10 text-white">{{code.title}}</div>
+          </div>
+          <div class="row">
+            <q-btn class='q-ma-sm' @click="editSelected(index)" color='blue' icon='brush'></q-btn>
+            <q-btn class='q-ma-sm' @click="viewSelected(index)" color='green' icon='import_contacts'></q-btn>
+            <q-btn class='q-ma-sm' @click="deletePrompt(index)" color='red' icon='delete'></q-btn>
+          </div>
             <q-dialog v-model="deleteConfirm" persistent>
               <q-card>
                 <q-card-section class="row items-center">
@@ -52,6 +56,7 @@ export default {
       }
     }
   },
+
   mounted: function () {
     this.getCodeList()
   },
