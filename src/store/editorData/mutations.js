@@ -83,7 +83,7 @@ export function updateEditorMode (state, payload) {
 
 export function updateUser (state, payload) {
   state.user = payload
-  if (user.email === 'prem2282@gmail.com') {
+  if (payload.email === 'prem2282@gmail.com') {
     state.editorMode = true
   } else {
     state.editorMode = false

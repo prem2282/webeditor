@@ -1,6 +1,7 @@
 <template>
-  <div>
-    <q-btn color="primary" 
+<div class="row justify-center q-pa-lg q-ma-lg">
+    <h3>Welcome to Skill Buddy!</h3>
+    <q-btn class= 'col-6' color="primary" 
     label="Login with Google"
     v-if="!signedIn"   
     @click="login()"
@@ -10,7 +11,7 @@
     v-else   
     @click="logout()"
     />
-  </div>
+</div>
 </template>
 
 <script>
