@@ -53,7 +53,7 @@ export default {
     userName() {
       // (4) Display authenticated user name
       const user = this.$gapi.getUserData()
-
+      console.log('user:', user);
       if (user) {
         return user.firstName
       }
