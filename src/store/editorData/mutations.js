@@ -84,9 +84,9 @@ export function updateEditorMode (state, payload) {
 export function updateUser (state, payload) {
   state.user = payload
   if (payload.email === 'prem2282@gmail.com') {
-    state.editorMode = true
+    state.isEditor = true
   } else {
-    state.editorMode = false
+    state.isEditor = false
   }
 }
 

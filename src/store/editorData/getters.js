@@ -49,3 +49,7 @@ export function showHelp (state) {
 export function editorMode (state) {
   return state.editorMode
 }
+
+export function isEditor (state) {
+  return state.isEditor
+}

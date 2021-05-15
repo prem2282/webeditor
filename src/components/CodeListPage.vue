@@ -3,18 +3,31 @@
     <div>
         <q-btn class='q-ma-sm' @click="createNewCode">Create New</q-btn>
     </div>
-    <div :v-if="showData" >
-        <div class="row pa-sm bg-orange-1" v-for="(code, index) in this.codeList" :key="code.id" :id="code.id">
-          <div class="row">
-            <div class="q-pa-sm q-ma-sm bg-blue-1">{{code.subject}}</div>
-            <div class="q-pa-sm q-ma-sm bg-blue-2">{{code.level}}  {{code.section}} {{code.seq_num}}</div>
-            <div class="q-pa-sm q-ma-sm bg-blue-10 text-white">{{code.title}}</div>
+    <div :v-if="showData" class="containerClass" >
+        <div class="pa-sm" v-for="(code, index) in this.codeList" :key="code.id" :id="code.id">
+          <div class="row q-mb-sm">
+            <div class='col-1'></div>
+            <div class='col-2'>
+              <div class="q-pa-sm  bg-blue-1 text-center">{{code.subject}}</div>
+              <div class="q-pa-sm  bg-blue-1 text-center">{{code.level}}  {{code.section}}</div>
+            </div>
+            <div class="col-1 ">
+              <div class="q-pa-sm bg-blue-3 text-center align-center seqNumClass">{{code.seq_num}}</div>
+            </div>
+            <div class="col-6 grid" @click="viewSelected(index)">
+              <q-item clickable class="q-pa-sm titleClass">
+                <div>{{code.title}}</div>
+                </q-item>
+            </div>
+            <div class="col-1">
+              <div class="row">
+                <q-btn v-if="isEditor" class='col-12' @click="editSelected(index)" color='blue-4' icon='brush'></q-btn>
+                <q-btn v-if="isEditor" class='col-12' @click="deletePrompt(index)" color='blue-6' icon='delete'></q-btn>
+              </div>
+            </div>
+
           </div>
-          <div class="row">
-            <q-btn v-if="editorMode" class='q-ma-sm' @click="editSelected(index)" color='blue' icon='brush'></q-btn>
-            <q-btn class='q-ma-sm' @click="viewSelected(index)" color='green' icon='import_contacts'></q-btn>
-            <q-btn v-if="editorMode" class='q-ma-sm' @click="deletePrompt(index)" color='red' icon='delete'></q-btn>
-          </div>
+
             <q-dialog v-model="deleteConfirm" persistent>
               <q-card>
                 <q-card-section class="row items-center">
@@ -47,7 +60,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('editorData', ['codeList', 'showHelp','editorMode']),
+    ...mapGetters('editorData', ['codeList', 'showHelp','editorMode', 'isEditor']),
     showData: function () {
       if (this.codeList) {
         return true
@@ -183,5 +196,34 @@ export default {
 }
 </script>
 <style lang='css' scoped>
+
+.seqNumClass {
+  font-size: 2rem;
+  height: 100%;
+  text-align: center;
+  justify-content: center;
+  text-shadow: silver;
+}
+
+.titleClass {
+  height: 100%;
+  font-size: 1.7rem;
+  color: silver;
+  background-color: rgb(58, 58, 63);
+  transition: color .5s, background-color .5s, font-size .5s;
+  transition-timing-function: ease;
+  text-align: center;
+}
+
+.titleClass:hover {
+  font-size: 1.8rem;
+  color:white;
+  background-color: rgb(40, 40, 32);
+}
+
+.containerClass {
+  width: 80vw;
+
+}
 
 </style>

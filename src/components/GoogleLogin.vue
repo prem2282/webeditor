@@ -1,7 +1,7 @@
 <template>
 <div class="row justify-center q-pa-lg q-ma-lg">
-    <h3>Welcome to Skill Buddy!</h3>
-    <q-btn class= 'col-6' color="primary" 
+    <h3 class='justify-center col-8'>Welcome to Skill Buddy!</h3>
+    <q-btn class= 'col-8' color="primary" 
     label="Login with Google"
     v-if="!signedIn"   
     @click="login()"
