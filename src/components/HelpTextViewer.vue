@@ -47,14 +47,14 @@ export default {
   background-color: rgb(3, 3, 3);
   color: white;
   padding: 1em;
-  border: solid .3em blanchedalmond;
+  border: solid .1em blanchedalmond;
 }
 
 .blurBox {
   position: absolute;
   height: 100%;
   width: 100vw;
-  background-color:rgb(235, 229, 226);
+  background-color: black;
   z-index: 9;
 }
 

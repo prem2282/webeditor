@@ -2,7 +2,7 @@
     <q-page>
         <div class="row justify-center q-pr-sm q-pl-sm bg-black">
             <div  class="col-1">
-              <q-btn  class="q-ma-xs" @click='goBack' dense round color="primary" icon="arrow_back" />
+              <q-btn  class="q-ma-xs" @click='goBack' dense round color="primary" icon="home" />
             </div>
             <div  v-if="editorMode"  class="col-2">
               <q-btn  class="q-ma-xs" label="title" color="primary" @click="showTitle = true" />
@@ -64,11 +64,13 @@
             <div class="col">
               <div class='row float-right'>
                 <q-btn dense class="q-ma-xs" @click="updateShowHelp(showHelp)" round color="negative" icon="import_contacts" />
-                <q-btn dense class="q-ma-xs" v-model='vertView' round @click='setView(vertView)' color='primary'>
+                <q-btn dense class="q-ma-xs" v-model='vertView' round @click='vertView=!vertView' color='primary'>
                     <q-icon v-if="vertView" name="view_column" />
                     <q-icon v-else name="vertical_split" />
                 </q-btn>
                 <q-btn  v-if="editorMode" dense class="q-ma-xs" @click='saveClicked' round color="positive" icon="save" />
+                <q-btn  dense class="q-ma-xs" @click='backClicked' round color="positive" icon="arrow_back" />
+                <q-btn  dense class="q-ma-xs" @click='nextClicked' round color="positive" icon="arrow_forward" />
               </div>
             </div>
 
@@ -138,7 +140,7 @@ import HelpTextEditor from './HelpTextEditor'
 import HelpTextViewer from './HelpTextViewer'
 import { mapGetters, mapActions } from 'vuex'
 import axios from 'axios'
-
+const targetUrl = 'https://prem2282.pythonanywhere.com/api/CodeList/'
 export default {
   data () {
     return {
@@ -155,12 +157,13 @@ export default {
       fullViewCss: false,
       fullViewJs: false,
       showTitle: false,
-      showCdn: false
+      showCdn: false,
+      vertView: false
     }
   },
 
   computed: {
-    ...mapGetters('editorData', ['pageContent', 'selectedCode', 'codeList', 'vertView', 'showHelp', 'editorMode', 'outputValue']),
+    ...mapGetters('editorData', ['pageContent', 'selectedCode', 'codeList', 'showHelp', 'editorMode', 'outputValue', 'codeListIndex']),
     showCodeBlocks: function () {
       return this.showHTML || this.showCSS || this.showJS
     },
@@ -212,7 +215,7 @@ export default {
   },
 
   methods: {
-    ...mapActions('editorData', ['updatePageContent', 'updateCDNText', 'addToCodeList', 'updateToCodeList', 'setView', 'updateShowHelp']),
+    ...mapActions('editorData', ['updatePageContent', 'updateCDNText', 'addToCodeList', 'updateToCodeList', 'setView', 'updateShowHelp','updateSelectedCode','updateCodeListIndex']),
 
     updateTempState: function (pageContent) {
       console.log('in updateTempState', pageContent)
@@ -233,6 +236,63 @@ export default {
       this.pageContent.code_1 = this.head_
       this.updatePageContent(this.pageContent)
     },
+
+    nextClicked: function () {
+      let index = this.codeListIndex + 1
+      if (index === this.codeList.length) {
+        index = 0
+        this.$q.notify({
+        message: 'No more. Already at the end!',
+        color: 'red',
+        timeout: 1000,
+        position: 'top-right',
+        icon: 'save'
+        })
+      } else {
+        console.log('index:', index);
+        this.getSelectedCode(index)
+      }
+    },
+
+    backClicked: function () {
+      let index = this.codeListIndex - 1
+      if (index === -1) {
+        index = 0
+        this.$q.notify({
+        message: 'No more. Already at the beginning!',
+        color: 'red',
+        timeout: 1000,
+        position: 'top-right',
+        icon: 'save'
+      })
+      } else {
+        this.getSelectedCode(index)
+      }
+    },
+
+    getSelectedCode: async function (index) {
+
+      this.updateSelectedCode(index)
+      const selectedCodeId = this.codeList[index].id
+      const codeURL = targetUrl + selectedCodeId
+      console.log('codeURL', codeURL)
+      if (selectedCodeId > 0) {
+        await axios
+          .get(codeURL)
+          .then(res => {
+            console.log('response in codeURL:', res.data)
+            if (res.data.id === selectedCodeId) {
+              this.updatePageContent(res.data)
+              this.updateCodeListIndex(index)
+              this.updateShowHelp(this.showHelp)
+            } else {
+              console.log('no data')
+              return null
+            }
+          })
+      }
+    },
+
 
     saveClicked: function () {
       const { subject, level, section, title } = this.pageContent
@@ -339,9 +399,7 @@ export default {
 
   },
   mounted: function () {
-    this.showHTML = true
-    this.showCSS = true
-    this.showJS = true
+
     console.log('in mounted', this.pageContent)
     this.updateTempState(this.pageContent)
     // this.subject_ = this.codeListIndex > 0 ? this.codeList[this.codeListIndex].subject : ''
@@ -354,6 +412,18 @@ export default {
     if (!this.pageContent.description_1 & !this.showHelp) {
       this.updateShowHelp(this.showHelp)
     }
+
+    this.showHTML = this.pageContent.code_2 ? true : false
+    this.showCSS = this.pageContent.code_3 ? true : false
+    this.showJS = this.pageContent.code_4 ? true : false
+
+    this.fullViewHtml = !this.showCSS && !this.showJS
+    this.fullViewCss = !this.showHTML && !this.showJS
+    this.fullViewJs = !this.showJS && !this.showCSS
+
+    this.vertView = this.fullViewHtml || this.fullViewCss || this.fullViewJs
+
+
   }
 }
 

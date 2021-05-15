@@ -69,9 +69,9 @@ export function updateCDNText (state, payload) {
   updateOutputValue(state)
 }
 
-export function setView (state, payload) {
-  state.vertView = !payload
-}
+// export function setView (state, payload) {
+//   state.vertView = !payload
+// }
 
 export function updateShowHelp (state, payload) {
   state.showHelp = !payload
