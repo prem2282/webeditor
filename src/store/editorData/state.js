@@ -29,6 +29,9 @@ export default function () {
     selectedCode: '',
     vertView: false,
     showHelp: true,
-    editorMode: true
+    editorMode: true,
+    user: {
+    },
+    signedIn: false,
   }
 }

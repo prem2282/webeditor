@@ -18,12 +18,19 @@ export function storedData (state) {
   return state.storedData
 }
 
+export function user (state) {
+  return state.user
+}
+
+export function signedIn (state) {
+  return state.signedIn
+}
+
 export function menuData (state) {
   return state.menuData
 }
 
 export function codeList (state) {
-  console.log('updatecode', process.env.APP_UPDATE_CODE)
   return state.codeList
 }
 

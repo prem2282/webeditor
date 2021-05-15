@@ -11,9 +11,9 @@
             <div class="q-pa-sm q-ma-sm bg-blue-10 text-white">{{code.title}}</div>
           </div>
           <div class="row">
-            <q-btn class='q-ma-sm' @click="editSelected(index)" color='blue' icon='brush'></q-btn>
+            <q-btn v-if="editorMode" class='q-ma-sm' @click="editSelected(index)" color='blue' icon='brush'></q-btn>
             <q-btn class='q-ma-sm' @click="viewSelected(index)" color='green' icon='import_contacts'></q-btn>
-            <q-btn class='q-ma-sm' @click="deletePrompt(index)" color='red' icon='delete'></q-btn>
+            <q-btn v-if="editorMode" class='q-ma-sm' @click="deletePrompt(index)" color='red' icon='delete'></q-btn>
           </div>
             <q-dialog v-model="deleteConfirm" persistent>
               <q-card>
@@ -47,7 +47,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('editorData', ['codeList', 'showHelp']),
+    ...mapGetters('editorData', ['codeList', 'showHelp','editorMode']),
     showData: function () {
       if (this.codeList) {
         return true

@@ -1,5 +1,7 @@
 // import { pageContent } from './getters'
 
+import { user } from "./getters"
+
 function updateOutputValue (state) {
   const headContent = state.pageContent.code_1
   const htmlContent = state.pageContent.code_2
@@ -77,4 +79,22 @@ export function updateShowHelp (state, payload) {
 
 export function updateEditorMode (state, payload) {
   state.editorMode = payload
+}
+
+export function updateUser (state, payload) {
+  state.user = payload
+  if (user.email === 'prem2282@gmail.com') {
+    state.editorMode = true
+  } else {
+    state.editorMode = false
+  }
+}
+
+export function updateSignedIn (state, payload) {
+  state.signedIn = payload
+  console.log('in mutation updateSignedIn:', payload);
+  if (!payload) {
+    state.user = {}
+    state.editorMode = false
+  }
 }

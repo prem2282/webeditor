@@ -1,13 +1,14 @@
 <template>
   <div>
-    <div v-if="isSignedIn">
-      <button @click="logout()" type="button">Logout</button>
-      {{ userName }}
-    </div>
     <q-btn color="primary" 
     label="Login with Google"
-    v-if="!isSignedIn"   
+    v-if="!signedIn"   
     @click="login()"
+    />
+    <q-btn color="primary" 
+    label="SignOut"
+    v-else   
+    @click="logout()"
     />
   </div>
 </template>
@@ -16,7 +17,7 @@
 
 import Vue from 'vue'
 import VueGapi from 'vue-gapi'
-
+import { mapGetters, mapActions } from 'vuex'
 Vue.use(VueGapi, {
 //   apiKey: '<YOUR_API_KEY>',
   clientId: '581878376447-bjftl3716gjl969bdlmcufs9cj47knuo.apps.googleusercontent.com',
@@ -27,35 +28,50 @@ Vue.use(VueGapi, {
 
 export default {
   name: 'login',
-  data() {
-    return {
-      isSignedIn: null, // (1) Track authenticated state
-    }
-  },
+
   created() {
     // (2) Subscribe to authentication status changes
     console.log('listening to signin');
     this.$gapi.listenUserSignIn((isSignedIn) => {
-      this.isSignedIn = isSignedIn
+    this.updateSignedIn(isSignedIn)
+    if (isSignedIn) {
+      this.$router.push(this.$route.query.redirect || '/')
+    } else {
+      this.updateUser({}) 
+    }
     })
   },
   methods: {
     // (3) Expose $gapi methods
-    login() {
-        console.log('logging in');
-      this.$gapi.login()
+    ...mapActions('editorData',['updateUser','updateSignedIn']),
+    async login() {
+      console.log('logging in');
+      console.log('origin',window.location.origin);
+      await this.$gapi.login()
+      const user = this.$gapi.getUserData()
+      if (user) {
+        console.log('updating user');
+        this.updateUser(user)
+        this.updateSignedIn(true)
+        this.$router.push(this.$route.query.redirect || '/')
+      }
     },
     logout() {
+      console.log('logged out');
       this.$gapi.logout()
+      this.updateSignedIn(false)
     },
   },
   computed: {
-    userName() {
+    ...mapGetters('editorData', ['user','signedIn']),
+    userData() {
       // (4) Display authenticated user name
       const user = this.$gapi.getUserData()
-      console.log('user:', user);
+      console.log('user in computed:', user);
       if (user) {
-        return user.firstName
+        this.updateUser(user)
+        this.updateSignedIn(true)
+        return user
       }
     },
   },

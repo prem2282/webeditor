@@ -158,6 +158,7 @@ export default {
       showCdn: false
     }
   },
+
   computed: {
     ...mapGetters('editorData', ['pageContent', 'selectedCode', 'codeList', 'vertView', 'showHelp', 'editorMode', 'outputValue']),
     showCodeBlocks: function () {

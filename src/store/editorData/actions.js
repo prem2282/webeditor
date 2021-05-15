@@ -105,3 +105,13 @@ export function updateEditorMode ({ commit }, payload) {
   console.log('payload in updateEditorMode', payload)
   commit('updateEditorMode', payload)
 }
+
+export function updateUser ({ commit }, payload) {
+  // console.log('payload in updateUser', payload)
+  commit('updateUser', payload)
+}
+
+export function updateSignedIn ({ commit }, payload) {
+  // console.log('payload in updateUser', payload)
+  commit('updateSignedIn', payload)
+}
