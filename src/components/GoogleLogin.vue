@@ -20,6 +20,7 @@ import VueGapi from 'vue-gapi'
 Vue.use(VueGapi, {
 //   apiKey: '<YOUR_API_KEY>',
   clientId: '581878376447-bjftl3716gjl969bdlmcufs9cj47knuo.apps.googleusercontent.com',
+  scope: 'profile'
 //   discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
 //   scope: 'https://www.googleapis.com/auth/spreadsheets',
 })
