@@ -14,8 +14,13 @@
         <q-toolbar-title>
           Skill Buddy: Online IDE
         </q-toolbar-title>
-        <q-avatar v-if="user.imageUrl" @click='logout'>
+
+        <q-avatar v-if="user.imageUrl">
           <img :src="user.imageUrl">
+          <q-popup-proxy transition-show="flip-up" transition-hide="flip-down">
+            <p class="q-pa-sm">{{user.fullName}}</p>
+            <q-btn flat label="logout" color="blue" @click='logout'></q-btn>              
+          </q-popup-proxy>
         </q-avatar>
         <div v-else-if="user.firstName">{{user.firstName}}</div>
 
