@@ -1,9 +1,10 @@
 <template>
     <div @click='updateShowHelp(showHelp)' class="blurBox"  :class="showHelp ? 'blurBoxAppear' : 'blurBoxExit'">
-        <div class="helpBox">
+        <div class="">
 
         </div>
-        <div class="helpBox " >
+        <div v-if="showHelp" class="helpBox " >
+            <h5 class="text-yellow text-center text-uppercase">{{this.title}}</h5>
             <div class="helpTextClass shadow-15" v-html="this.helpText">
             </div>
         </div>
@@ -14,8 +15,10 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 export default {
-  props: ['helpText'],
-
+  // props: ['helpText'],
+  props: { helpText: { type: String }, 
+           title: { type: String },
+           },
   computed: {
     ...mapGetters('editorData', ['showHelp'])
   },
@@ -66,7 +69,7 @@ export default {
 }
 
 .blurBoxExit {
-  top: -100vh;
+  top: 100vh;
   height: 0;
   left: 0;
   opacity: 0%;
@@ -76,24 +79,25 @@ export default {
 @keyframes blurAni {
   0% {
       opacity: 0%;
-      top: 100vh;
+      left: 10vw;
   }
   100% {
-      top: 0;
+      left: 0;
       opacity: 80%;
   }
 }
 
 @keyframes blurAniExit {
   0% {
-      opacity: 80%;
-      top: 0;
+      opacity: 50%;
+      left: 0vw;
       height: 100%;
   }
   100% {
       opacity: 0%;
-      top: 150vh;
-      height: 0;
+      left: 10vw;
+      height: 100%;
+      z-index: -9;
   }
 }
 </style>

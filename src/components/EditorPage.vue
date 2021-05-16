@@ -53,6 +53,7 @@
                 <div v-else>
                   <HelpTextViewer
                     :helpText = this.pageContent.description_1
+                    :title = this.pageContent.title
                   />
                 </div>
                 <q-btn class="q-ma-xs" round dense icon='add' color="primary" @click="showCdn = true" />
@@ -75,9 +76,9 @@
             </div>
 
         </div>
-        <div :class="vertView?'outerBoxVert':'outerBoxHor'">
+        <div :class="vertView?'outerBoxVert':'outerBoxHor'" v-if="!showHelp">
             <div v-show="showCodeBlocks" class="codeBox" :class="vertView?'vertView':'horView'">
-                <div class="box1 bg-red-8" :class="htmlBoxClass">
+                <div v-if="showHTML" class="box1 bg-red-8" :class="htmlBoxClass">
                   <div class='row q-pl-md'>
                     <h6>HTML</h6>
                     <div class='col'>
@@ -91,9 +92,10 @@
                       editorBox = 'html'
                       :vertView = this.vertView
                       :height = this.htmlH
+                      :width = this.aceWidth
                   />
                 </div>
-                <div class="box2 bg-cyan-8" :class="!showCSS ? 'boxclose':''">
+                <div v-if="showCSS" class="box2 bg-cyan-8" :class="!showCSS ? 'boxclose':''">
                   <div class='row q-pl-md'>
                     <h6>CSS</h6>
                     <div class='col'>
@@ -107,9 +109,10 @@
                         editorBox = 'css'
                         :vertView = this.vertView
                         :height = this.cssH
+                        :width = this.aceWidth
                     />
                 </div>
-                <div class="box3 bg-lime-8" :class="!showJS ? 'boxclose':''">
+                <div v-if="showJS" class="box3 bg-lime-8" :class="!showJS ? 'boxclose':''">
                   <div class='row q-pl-md'>
                     <h6>JS</h6>
                     <div class='col'>
@@ -123,6 +126,7 @@
                       editorBox = 'js'
                       :vertView = this.vertView
                       :height = this.jsH
+                      :width = this.aceWidth
                   />
                 </div>
             </div>
@@ -140,6 +144,7 @@ import HelpTextEditor from './HelpTextEditor'
 import HelpTextViewer from './HelpTextViewer'
 import { mapGetters, mapActions } from 'vuex'
 import axios from 'axios'
+import { vertView } from 'src/store/editorData/getters'
 const targetUrl = 'https://prem2282.pythonanywhere.com/api/CodeList/'
 export default {
   data () {
@@ -174,38 +179,23 @@ export default {
         return ''
       }
     },
-    htmlH: function () {
+
+    aceWidth: function () {
+      let totalEditors = this.showHTML + this.showCSS + this.showJS
       if (this.vertView) {
-        if (this.fullViewHtml) {
-          return '80vh'
-        } else {
-          return '30vh'
-        }
+        return '50vw'
       } else {
-        return '40vh'
+        return String(100/totalEditors) + 'vw'
       }
+    },
+    htmlH: function () {
+      return this.aceHeight(this.fullViewHtml)
     },
     cssH: function () {
-      if (this.vertView) {
-        if (this.fullViewCss) {
-          return '80vh'
-        } else {
-          return '30vh'
-        }
-      } else {
-        return '40vh'
-      }
+      return this.aceHeight(this.fullViewCss)
     },
     jsH: function () {
-      if (this.vertView) {
-        if (this.fullViewJs) {
-          return '80vh'
-        } else {
-          return '30vh'
-        }
-      } else {
-        return '40vh'
-      }
+      return this.aceHeight(this.fullViewJs)
     }
   },
   components: {
@@ -216,6 +206,23 @@ export default {
 
   methods: {
     ...mapActions('editorData', ['updatePageContent', 'updateCDNText', 'addToCodeList', 'updateToCodeList', 'setView', 'updateShowHelp','updateSelectedCode','updateCodeListIndex']),
+
+    aceHeight: function (fullView) {
+      let totalEditors = this.showHTML + this.showCSS + this.showJS
+      if (this.vertView) {
+        if (fullView) {
+          if (totalEditors > 1) {
+          return '70vh'
+          } else {
+          return '80vh'
+          }
+        } else {
+          return String(100/totalEditors) + 'vh'
+        }
+      } else {
+        return '40vh'
+      }
+    },
 
     updateTempState: function (pageContent) {
       console.log('in updateTempState', pageContent)
@@ -246,7 +253,7 @@ export default {
         color: 'red',
         timeout: 1000,
         position: 'top-right',
-        icon: 'save'
+        icon: 'warning'
         })
       } else {
         console.log('index:', index);
@@ -263,7 +270,7 @@ export default {
         color: 'red',
         timeout: 1000,
         position: 'top-right',
-        icon: 'save'
+        icon: 'warning'
       })
       } else {
         this.getSelectedCode(index)
@@ -284,6 +291,7 @@ export default {
             if (res.data.id === selectedCodeId) {
               this.updatePageContent(res.data)
               this.updateCodeListIndex(index)
+              this.updateTempState(this.pageContent)
               this.updateShowHelp(this.showHelp)
             } else {
               console.log('no data')
@@ -491,8 +499,8 @@ export default {
 }
 
 @keyframes boxAppear {
-    0% {width: 00%;}
-    100% {width: 100%}
+    0% {height: 00%;}
+    100% {height: 100%}
 }
 
 @keyframes boxDisAppear {

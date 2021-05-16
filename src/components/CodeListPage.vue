@@ -4,7 +4,28 @@
         <q-btn class='q-ma-sm' @click="createNewCode">Create New</q-btn>
     </div>
     <div :v-if="showData" class="containerClass" >
-        <div class="pa-sm" v-for="(code, index) in this.codeList" :key="code.id" :id="code.id">
+
+        <div class="pa-sm row inline" v-for="(code, index) in this.codeList" :key="code.id" :id="code.id">
+          <div class=''>
+            <q-card class="card-class my-card text-white q-ma-sm">
+              <q-card-section @click="viewSelected(index)">
+                <div class="text-h6">{{code.seq_num}}. {{code.title}}</div>
+                <div class="text-subtitle2 text-grey"> {{code.subject}} {{code.section}}</div>
+              </q-card-section>
+
+              <q-card-actions v-if="isEditor">
+                <q-btn icon='brush' class="bg-blue" @click="editSelected(index)" dense round></q-btn>
+                <q-btn icon='delete' class="bg-red" @click="deletePrompt(index)" dense round></q-btn>
+              </q-card-actions>
+            </q-card>
+          </div>
+
+        </div>
+
+        <!-- <div class="pa-sm" v-for="(code, index) in this.codeList" :key="code.id" :id="code.id">
+
+
+
           <div class="row q-mb-sm">
             <div class='col-1'></div>
             <div class='col-2'>
@@ -41,7 +62,7 @@
                 </q-card-actions>
               </q-card>
             </q-dialog>
-        </div>
+        </div> -->
     </div>
   </q-page>
 </template>
@@ -56,7 +77,8 @@ export default {
   data () {
     return {
       deleteConfirm: false,
-      deleteMarkedIndex: null
+      deleteMarkedIndex: null,
+      cardClass : "my-card bg-black text-white q-ma-sm"
     }
   },
   computed: {
@@ -198,7 +220,7 @@ export default {
 <style lang='css' scoped>
 
 .seqNumClass {
-  font-size: 2rem;
+  font-size: 1.1rem;
   height: 100%;
   text-align: center;
   justify-content: center;
@@ -207,7 +229,7 @@ export default {
 
 .titleClass {
   height: 100%;
-  font-size: 1.7rem;
+  font-size: 1rem;
   color: silver;
   background-color: rgb(58, 58, 63);
   transition: color .5s, background-color .5s, font-size .5s;
@@ -216,14 +238,27 @@ export default {
 }
 
 .titleClass:hover {
-  font-size: 1.8rem;
+  font-size: 1.1rem;
   color:white;
   background-color: rgb(40, 40, 32);
 }
 
 .containerClass {
   width: 80vw;
+}
 
+.card-class {
+  width: 25vw;
+  background-color: rgb(14, 9, 37);
+}
+
+.my-card {
+  transition: color .5s, background-color .5s, font-size .5s;
+  transition-timing-function: ease;
+}
+
+.my-card:hover {
+  background-color: rgb(44, 43, 41);
 }
 
 </style>

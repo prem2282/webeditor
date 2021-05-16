@@ -4,7 +4,7 @@
     @init="editorInit"
     :lang=this.editorBox
     theme="monokai"
-    width="100%"
+    :width=this.width
     :height="this.height?this.height:'90vh'"
     :options="{
       enableBasicAutocompletion: true,
@@ -13,7 +13,7 @@
       highlightActiveLine: true,
       enableSnippets: false,
       showLineNumbers: true,
-      tabSize: 2,
+      tabSize: 1,
       showPrintMargin: false,
       showGutter: true
     }"
@@ -40,7 +40,7 @@ export default {
     }
   },
 
-  props: ['pageContent', 'editorBox', 'vertView', 'height'],
+  props: ['pageContent', 'editorBox', 'vertView', 'height', 'width'],
   components: {
     AceEditor
   },

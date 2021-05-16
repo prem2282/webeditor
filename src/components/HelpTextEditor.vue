@@ -103,7 +103,9 @@ import { mapGetters, mapActions } from 'vuex'
 
 export default {
 
-  props: { saveHelpText: { type: Function }, helpExit: { type: Function } },
+  props: { saveHelpText: { type: Function }, 
+           helpExit: { type: Function } 
+           },
 
   computed: {
     ...mapGetters('editorData', ['showHelp', 'pageContent']),
