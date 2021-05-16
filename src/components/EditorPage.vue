@@ -304,8 +304,7 @@ export default {
 
     saveClicked: function () {
       const { subject, level, section, title } = this.pageContent
-
-      if (subject & level & section & title) {
+      if (subject && level && section && title) {
         this.updateRecord()
       } else {
         this.showTitle = true

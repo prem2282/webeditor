@@ -36,8 +36,16 @@ export default {
     this.$gapi.listenUserSignIn((isSignedIn) => {
     this.updateSignedIn(isSignedIn)
     if (isSignedIn) {
-      // this.$router.push(this.$route.query.redirect || '/')
-      this.$router.push({ path: '/' })
+      const user = this.$gapi.getUserData()
+      if (user) {
+        console.log('updating user');
+        this.updateUser(user)
+        this.updateSignedIn(true)
+        this.$router.push({ path: '/' })
+      } else {
+        this.updateUser({})
+        this.updateSignedIn(false)
+      }
     } else {
       this.updateUser({}) 
     }
