@@ -36,7 +36,8 @@
                   </q-card-section>
 
                   <q-card-actions align="right">
-                    <q-btn flat label="OK" color="primary" @click='updateCDNText(head_)' v-close-popup />
+                    <q-btn flat label="OK" color="primary" @click='updateCDNText(head_)' v-close-popup>
+                    </q-btn>
                   </q-card-actions>
                 </q-card>
               </q-dialog>
@@ -56,22 +57,54 @@
                     :title = this.pageContent.title
                   />
                 </div>
-                <q-btn class="q-ma-xs" round dense icon='add' color="primary" @click="showCdn = true" />
-                <q-btn  class="q-ma-xs" v-model='showHTML' @click='showHTML=!showHTML' :color="showHTML ? 'red-8' : 'info'" label="html"/>
-                <q-btn  class="q-ma-xs" v-model='showCSS' @click='showCSS=!showCSS' :color="showCSS ? 'cyan-8' : 'info'" label="css"/>
-                <q-btn  class="q-ma-xs" v-model='showJS' @click='showJS=!showJS' :color="showJS ? 'lime-8' : 'info'" label="js"/>
+                <q-btn class="q-ma-xs" round dense icon='add' color="primary" @click="showCdn = true">
+                  <q-tooltip content-class="bg-accent">Add Javascript/CSS CDN libriaries</q-tooltip>
+                </q-btn>
+                <q-btn  class="q-ma-xs" v-model='showHTML' @click='showHTML=!showHTML' :color="showHTML ? 'red-8' : 'info'" label="html">
+                  <q-tooltip content-class="bg-accent">HTML editor</q-tooltip>
+                </q-btn>
+                <q-btn  class="q-ma-xs" v-model='showCSS' @click='showCSS=!showCSS' :color="showCSS ? 'cyan-8' : 'info'" label="css">
+                  <q-tooltip content-class="bg-accent">CSS editor</q-tooltip>
+                </q-btn>
+                <q-btn  class="q-ma-xs" v-model='showJS' @click='showJS=!showJS' :color="showJS ? 'lime-8' : 'info'" label="js">
+                  <q-tooltip content-class="bg-accent">Javascript editor</q-tooltip>
+                </q-btn>
+
               </div>
             </div>
             <div class="col">
               <div class='row float-right'>
-                <q-btn dense class="q-ma-xs" @click="updateShowHelp(showHelp)" round color="negative" icon="import_contacts" />
+                <q-btn dense class="q-ma-xs" @click="updateShowHelp(showHelp)" round color="negative" icon="import_contacts">
+                  <q-tooltip content-class="bg-accent">Show Help Text</q-tooltip>
+                </q-btn>
                 <q-btn dense class="q-ma-xs" v-model='vertView' round @click='vertView=!vertView' color='primary'>
                     <q-icon v-if="vertView" name="view_column" />
                     <q-icon v-else name="vertical_split" />
+                    <q-tooltip content-class="bg-accent">Toggle View</q-tooltip>
                 </q-btn>
-                <q-btn  v-if="editorMode" dense class="q-ma-xs" @click='saveClicked' round color="positive" icon="save" />
-                <q-btn  dense class="q-ma-xs" @click='backClicked' round color="positive" icon="arrow_back" />
-                <q-btn  dense class="q-ma-xs" @click='nextClicked' round color="positive" icon="arrow_forward" />
+                <q-btn  v-if="editorMode" dense class="q-ma-xs" @click='saveClicked' round color="positive" icon="save">
+                  <q-tooltip content-class="bg-accent">Save your document</q-tooltip>
+                </q-btn>
+                <q-btn  dense class="q-ma-xs" @click='backClicked' round color="positive" icon="arrow_back">
+                  <q-tooltip content-class="bg-accent">Previous lesson</q-tooltip>
+                </q-btn>
+                <q-btn  dense class="q-ma-xs" @click='nextClicked' round color="positive" icon="arrow_forward">
+                  <q-tooltip content-class="bg-accent">Next lesson</q-tooltip>
+                </q-btn>
+                <q-btn  dense class="q-ma-xs" round color="blue" @click="showProfile = true" icon="person">
+                  <q-tooltip v-model="showProfile"
+                  anchor="bottom start" 
+                  self="top middle" 
+                  content-class="bg-blue"
+                  transition-show="rotate"
+                  transition-hide="rotate"
+                  >
+                    <q-btn round dense class="q-ma-xs" color="red" icon="close" @click="showProfile = false"/>                    
+                    <p dense v-text="user.fullName" class="text-subtitle1"></p>
+                    <p dense v-text="user.email" class="text-subtitle2"></p>
+                    <q-btn  dense class="q-ma-xs" color="blue-14" label="Signout"/>
+                  </q-tooltip>
+                </q-btn>              
               </div>
             </div>
 
@@ -163,12 +196,13 @@ export default {
       fullViewJs: false,
       showTitle: false,
       showCdn: false,
-      vertView: false
+      vertView: false,
+      showProfile: false,
     }
   },
 
   computed: {
-    ...mapGetters('editorData', ['pageContent', 'selectedCode', 'codeList', 'showHelp', 'editorMode', 'outputValue', 'codeListIndex']),
+    ...mapGetters('editorData', ['pageContent', 'selectedCode', 'codeList', 'showHelp', 'editorMode', 'outputValue', 'codeListIndex','user']),
     showCodeBlocks: function () {
       return this.showHTML || this.showCSS || this.showJS
     },

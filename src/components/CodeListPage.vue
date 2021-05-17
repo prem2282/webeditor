@@ -3,11 +3,11 @@
     <div>
         <q-btn class='q-ma-sm' @click="createNewCode">Create New</q-btn>
     </div>
-    <div :v-if="showData" class="containerClass" >
+    <div :v-if="showData" class="containerClass row" >
 
-        <div class="pa-sm row inline" v-for="(code, index) in this.codeList" :key="code.id" :id="code.id">
-          <div class=''>
-            <q-card class="card-class my-card text-white q-ma-sm">
+        <div class="pa-sm col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 inline" v-for="(code, index) in this.codeList" :key="code.id" :id="code.id">
+          <div class='col-12-xs col-6-sm col-3-xl q-ma-xs'>
+            <q-card class="card-class my-card text-white ">
               <q-card-section @click="viewSelected(index)">
                 <div class="text-h6">{{code.seq_num}}. {{code.title}}</div>
                 <div class="text-subtitle2 text-grey"> {{code.subject}} {{code.section}}</div>
@@ -244,11 +244,11 @@ export default {
 }
 
 .containerClass {
-  width: 80vw;
+  width: 98vw;
 }
 
 .card-class {
-  width: 25vw;
+  /* width: 100%; */
   background-color: rgb(14, 9, 37);
 }
 

@@ -16,7 +16,7 @@
         </q-toolbar-title>
 
         <q-avatar v-if="user.imageUrl">
-          <img :src="user.imageUrl">
+          <img :src="user.imageUrl" :alt="user.firstName[0]">
           <q-popup-proxy transition-show="flip-up" transition-hide="flip-down">
             <p class="q-pa-sm">{{user.fullName}}</p>
             <q-btn flat label="logout" color="blue" @click='logout'></q-btn>              
