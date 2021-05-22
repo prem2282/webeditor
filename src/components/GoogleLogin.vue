@@ -19,6 +19,7 @@
 import Vue from 'vue'
 import VueGapi from 'vue-gapi'
 import { mapGetters, mapActions } from 'vuex'
+
 Vue.use(VueGapi, {
 //   apiKey: '<YOUR_API_KEY>',
   clientId: '581878376447-bjftl3716gjl969bdlmcufs9cj47knuo.apps.googleusercontent.com',

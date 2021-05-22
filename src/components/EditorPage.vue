@@ -76,11 +76,12 @@
               <div class='row float-right'>
                 <q-btn dense class="q-ma-xs" @click="updateShowHelp(showHelp)" round color="negative" icon="import_contacts">
                   <q-tooltip content-class="bg-accent">Show Help Text</q-tooltip>
+                  <div v-text="dummyKey"></div>
                 </q-btn>
                 <q-btn dense class="q-ma-xs" v-model='vertView' round @click='vertView=!vertView' color='primary'>
                     <q-icon v-if="vertView" name="view_column" />
                     <q-icon v-else name="vertical_split" />
-                    <q-tooltip content-class="bg-accent">Toggle View</q-tooltip>
+                    <q-tooltip content-class="bg-accent"></q-tooltip>
                 </q-btn>
                 <q-btn  v-if="editorMode" dense class="q-ma-xs" @click='saveClicked' round color="positive" icon="save">
                   <q-tooltip content-class="bg-accent">Save your document</q-tooltip>
@@ -196,7 +197,8 @@ export default {
       showTitle: false,
       showCdn: false,
       vertView: false,
-      showProfile: false
+      showProfile: false,
+      dummyKey: process.env.VUE_CLI_DUMMY_KEY
     }
   },
 
