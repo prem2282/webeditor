@@ -1,30 +1,45 @@
 <template>
   <q-page>
     <div>
-        <q-btn class='q-ma-sm' @click="createNewCode">Create New</q-btn>
+      <q-btn class="q-ma-sm" @click="createNewCode">Create New</q-btn>
     </div>
-    <div :v-if="showData" class="containerClass row" >
+    <div :v-if="showData" class="containerClass row">
+      <div
+        class="pa-sm col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 inline"
+        v-for="(code, index) in this.codeList"
+        :key="code.id"
+        :id="code.id"
+      >
+        <div class="col-12-xs col-6-sm col-3-xl q-ma-xs">
+          <q-card class="card-class my-card text-white ">
+            <q-card-section @click="viewSelected(index)">
+              <div class="text-h6">{{ code.seq_num }}. {{ code.title }}</div>
+              <div class="text-subtitle2 text-grey">
+                {{ code.subject }} {{ code.section }}
+              </div>
+            </q-card-section>
 
-        <div class="pa-sm col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 inline" v-for="(code, index) in this.codeList" :key="code.id" :id="code.id">
-          <div class='col-12-xs col-6-sm col-3-xl q-ma-xs'>
-            <q-card class="card-class my-card text-white ">
-              <q-card-section @click="viewSelected(index)">
-                <div class="text-h6">{{code.seq_num}}. {{code.title}}</div>
-                <div class="text-subtitle2 text-grey"> {{code.subject}} {{code.section}}</div>
-              </q-card-section>
-
-              <q-card-actions v-if="isEditor">
-                <q-btn icon='brush' class="bg-blue" @click="editSelected(index)" dense round></q-btn>
-                <q-btn icon='delete' class="bg-red" @click="deletePrompt(index)" dense round></q-btn>
-              </q-card-actions>
-            </q-card>
-          </div>
-
+            <q-card-actions v-if="isEditor">
+              <q-btn
+                icon="brush"
+                class="bg-blue"
+                @click="editSelected(index)"
+                dense
+                round
+              ></q-btn>
+              <q-btn
+                icon="delete"
+                class="bg-red"
+                @click="deletePrompt(index)"
+                dense
+                round
+              ></q-btn>
+            </q-card-actions>
+          </q-card>
         </div>
+      </div>
 
-        <!-- <div class="pa-sm" v-for="(code, index) in this.codeList" :key="code.id" :id="code.id">
-
-
+      <!-- <div class="pa-sm" v-for="(code, index) in this.codeList" :key="code.id" :id="code.id">
 
           <div class="row q-mb-sm">
             <div class='col-1'></div>
@@ -73,16 +88,20 @@ import axios from 'axios'
 const targetUrl = 'https://prem2282.pythonanywhere.com/api/CodeList/'
 
 export default {
-
   data () {
     return {
       deleteConfirm: false,
       deleteMarkedIndex: null,
-      cardClass : "my-card bg-black text-white q-ma-sm"
+      cardClass: 'my-card bg-black text-white q-ma-sm'
     }
   },
   computed: {
-    ...mapGetters('editorData', ['codeList', 'showHelp','editorMode', 'isEditor']),
+    ...mapGetters('editorData', [
+      'codeList',
+      'showHelp',
+      'editorMode',
+      'isEditor'
+    ]),
     showData: function () {
       if (this.codeList) {
         return true
@@ -96,20 +115,26 @@ export default {
     this.getCodeList()
   },
   methods: {
-    ...mapActions('editorData', ['updateCodeList', 'updateCodeListIndex', 'updateSelectedCode', 'updatePageContent', 'updateEditorMode', 'updateShowHelp', 'deleteFromCodeList']),
+    ...mapActions('editorData', [
+      'updateCodeList',
+      'updateCodeListIndex',
+      'updateSelectedCode',
+      'updatePageContent',
+      'updateEditorMode',
+      'updateShowHelp',
+      'deleteFromCodeList'
+    ]),
     getCodeList: async function () {
       if (this.codeList.length === 0) {
-        await axios
-          .get(targetUrl)
-          .then(res => {
-            const codelist = res.data
-            if (res.data.length > 0) {
-              console.log('res.data', codelist)
-              this.updateCodeList(res.data)
-            } else {
-              console.log('no data')
-            }
-          })
+        await axios.get(targetUrl).then(res => {
+          const codelist = res.data
+          if (res.data.length > 0) {
+            console.log('res.data', codelist)
+            this.updateCodeList(res.data)
+          } else {
+            console.log('no data')
+          }
+        })
       }
     },
 
@@ -119,20 +144,18 @@ export default {
       const codeURL = targetUrl + selectedCodeId
       console.log('codeURL', codeURL)
       if (selectedCodeId > 0) {
-        await axios
-          .get(codeURL)
-          .then(res => {
-            console.log('response in codeURL:', res.data)
-            if (res.data.id === selectedCodeId) {
-              this.updatePageContent(res.data)
-              this.updateCodeListIndex(index)
-              this.updateShowHelp(this.showHelp)
-              this.$router.push({ path: 'editor' })
-            } else {
-              console.log('no data')
-              return null
-            }
-          })
+        await axios.get(codeURL).then(res => {
+          console.log('response in codeURL:', res.data)
+          if (res.data.id === selectedCodeId) {
+            this.updatePageContent(res.data)
+            this.updateCodeListIndex(index)
+            this.updateShowHelp(this.showHelp)
+            this.$router.push({ path: 'editor' })
+          } else {
+            console.log('no data')
+            return null
+          }
+        })
       }
     },
 
@@ -161,19 +184,17 @@ export default {
       const deleteId = this.codeList[this.deleteMarkedIndex].id
       const deleteURL = targetUrl + 'delete/' + deleteId
 
-      await axios
-        .delete(deleteURL)
-        .then(res => {
-          console.log('deleted', res)
-          if (res.status === 204) {
-            this.deleteFromCodeList(this.deleteMarkedIndex)
-            console.log('deleted from codeList')
-            this.deletedMessage('Code Deleted', 'red')
-          } else {
-            console.log('not deleted')
-            this.deletedMessage('Code Not Deleted', 'orange')
-          }
-        })
+      await axios.delete(deleteURL).then(res => {
+        console.log('deleted', res)
+        if (res.status === 204) {
+          this.deleteFromCodeList(this.deleteMarkedIndex)
+          console.log('deleted from codeList')
+          this.deletedMessage('Code Deleted', 'red')
+        } else {
+          console.log('not deleted')
+          this.deletedMessage('Code Not Deleted', 'orange')
+        }
+      })
     },
 
     deletedMessage (message, color) {
@@ -214,11 +235,9 @@ export default {
       this.$router.push({ path: 'editor' })
     }
   }
-
 }
 </script>
-<style lang='css' scoped>
-
+<style lang="css" scoped>
 .seqNumClass {
   font-size: 1.1rem;
   height: 100%;
@@ -232,14 +251,14 @@ export default {
   font-size: 1rem;
   color: silver;
   background-color: rgb(58, 58, 63);
-  transition: color .5s, background-color .5s, font-size .5s;
+  transition: color 0.5s, background-color 0.5s, font-size 0.5s;
   transition-timing-function: ease;
   text-align: center;
 }
 
 .titleClass:hover {
   font-size: 1.1rem;
-  color:white;
+  color: white;
   background-color: rgb(40, 40, 32);
 }
 
@@ -253,12 +272,11 @@ export default {
 }
 
 .my-card {
-  transition: color .5s, background-color .5s, font-size .5s;
+  transition: color 0.5s, background-color 0.5s, font-size 0.5s;
   transition-timing-function: ease;
 }
 
 .my-card:hover {
   background-color: rgb(44, 43, 41);
 }
-
 </style>

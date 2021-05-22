@@ -16,9 +16,10 @@
 import { mapGetters, mapActions } from 'vuex'
 export default {
   // props: ['helpText'],
-  props: { helpText: { type: String }, 
-           title: { type: String },
-           },
+  props: {
+    helpText: { type: String },
+    title: { type: String }
+  },
   computed: {
     ...mapGetters('editorData', ['showHelp'])
   },

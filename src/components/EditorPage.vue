@@ -93,18 +93,18 @@
                 </q-btn>
                 <q-btn  dense class="q-ma-xs" round color="blue" @click="showProfile = true" icon="person">
                   <q-tooltip v-model="showProfile"
-                  anchor="bottom start" 
-                  self="top middle" 
+                  anchor="bottom start"
+                  self="top middle"
                   content-class="bg-blue"
                   transition-show="rotate"
                   transition-hide="rotate"
                   >
-                    <q-btn round dense class="q-ma-xs" color="red" icon="close" @click="showProfile = false"/>                    
+                    <q-btn round dense class="q-ma-xs" color="red" icon="close" @click="showProfile = false"/>
                     <p dense v-text="user.fullName" class="text-subtitle1"></p>
                     <p dense v-text="user.email" class="text-subtitle2"></p>
                     <q-btn  dense class="q-ma-xs" color="blue-14" label="Signout"/>
                   </q-tooltip>
-                </q-btn>              
+                </q-btn>
               </div>
             </div>
 
@@ -177,7 +177,6 @@ import HelpTextEditor from './HelpTextEditor'
 import HelpTextViewer from './HelpTextViewer'
 import { mapGetters, mapActions } from 'vuex'
 import axios from 'axios'
-import { vertView } from 'src/store/editorData/getters'
 const targetUrl = 'https://prem2282.pythonanywhere.com/api/CodeList/'
 export default {
   data () {
@@ -197,12 +196,12 @@ export default {
       showTitle: false,
       showCdn: false,
       vertView: false,
-      showProfile: false,
+      showProfile: false
     }
   },
 
   computed: {
-    ...mapGetters('editorData', ['pageContent', 'selectedCode', 'codeList', 'showHelp', 'editorMode', 'outputValue', 'codeListIndex','user']),
+    ...mapGetters('editorData', ['pageContent', 'selectedCode', 'codeList', 'showHelp', 'editorMode', 'outputValue', 'codeListIndex', 'user']),
     showCodeBlocks: function () {
       return this.showHTML || this.showCSS || this.showJS
     },
@@ -215,11 +214,11 @@ export default {
     },
 
     aceWidth: function () {
-      let totalEditors = this.showHTML + this.showCSS + this.showJS
+      const totalEditors = this.showHTML + this.showCSS + this.showJS
       if (this.vertView) {
         return '50vw'
       } else {
-        return String(100/totalEditors) + 'vw'
+        return String(100 / totalEditors) + 'vw'
       }
     },
     htmlH: function () {
@@ -239,19 +238,19 @@ export default {
   },
 
   methods: {
-    ...mapActions('editorData', ['updatePageContent', 'updateCDNText', 'addToCodeList', 'updateToCodeList', 'setView', 'updateShowHelp','updateSelectedCode','updateCodeListIndex']),
+    ...mapActions('editorData', ['updatePageContent', 'updateCDNText', 'addToCodeList', 'updateToCodeList', 'setView', 'updateShowHelp', 'updateSelectedCode', 'updateCodeListIndex']),
 
     aceHeight: function (fullView) {
-      let totalEditors = this.showHTML + this.showCSS + this.showJS
+      const totalEditors = this.showHTML + this.showCSS + this.showJS
       if (this.vertView) {
         if (fullView) {
           if (totalEditors > 1) {
-          return '70vh'
+            return '70vh'
           } else {
-          return '80vh'
+            return '80vh'
           }
         } else {
-          return String(100/totalEditors) + 'vh'
+          return String(100 / totalEditors) + 'vh'
         }
       } else {
         return '40vh'
@@ -283,14 +282,14 @@ export default {
       if (index === this.codeList.length) {
         index = 0
         this.$q.notify({
-        message: 'No more. Already at the end!',
-        color: 'red',
-        timeout: 1000,
-        position: 'top-right',
-        icon: 'warning'
+          message: 'No more. Already at the end!',
+          color: 'red',
+          timeout: 1000,
+          position: 'top-right',
+          icon: 'warning'
         })
       } else {
-        console.log('index:', index);
+        console.log('index:', index)
         this.getSelectedCode(index)
       }
     },
@@ -300,19 +299,18 @@ export default {
       if (index === -1) {
         index = 0
         this.$q.notify({
-        message: 'No more. Already at the beginning!',
-        color: 'red',
-        timeout: 1000,
-        position: 'top-right',
-        icon: 'warning'
-      })
+          message: 'No more. Already at the beginning!',
+          color: 'red',
+          timeout: 1000,
+          position: 'top-right',
+          icon: 'warning'
+        })
       } else {
         this.getSelectedCode(index)
       }
     },
 
     getSelectedCode: async function (index) {
-
       this.updateSelectedCode(index)
       const selectedCodeId = this.codeList[index].id
       const codeURL = targetUrl + selectedCodeId
@@ -334,7 +332,6 @@ export default {
           })
       }
     },
-
 
     saveClicked: function () {
       const { subject, level, section, title } = this.pageContent
@@ -440,7 +437,6 @@ export default {
 
   },
   mounted: function () {
-
     console.log('in mounted', this.pageContent)
     this.updateTempState(this.pageContent)
     // this.subject_ = this.codeListIndex > 0 ? this.codeList[this.codeListIndex].subject : ''
@@ -454,17 +450,15 @@ export default {
       this.updateShowHelp(this.showHelp)
     }
 
-    this.showHTML = this.pageContent.code_2 ? true : false
-    this.showCSS = this.pageContent.code_3 ? true : false
-    this.showJS = this.pageContent.code_4 ? true : false
+    this.showHTML = !!this.pageContent.code_2
+    this.showCSS = !!this.pageContent.code_3
+    this.showJS = !!this.pageContent.code_4
 
     this.fullViewHtml = !this.showCSS && !this.showJS
     this.fullViewCss = !this.showHTML && !this.showJS
     this.fullViewJs = !this.showJS && !this.showCSS
 
     this.vertView = this.fullViewHtml || this.fullViewCss || this.fullViewJs
-
-
   }
 }
 

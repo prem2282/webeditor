@@ -1,7 +1,5 @@
 // import { pageContent } from './getters'
 
-import { user } from "./getters"
-
 function updateOutputValue (state) {
   const headContent = state.pageContent.code_1
   const htmlContent = state.pageContent.code_2
@@ -92,7 +90,7 @@ export function updateUser (state, payload) {
 
 export function updateSignedIn (state, payload) {
   state.signedIn = payload
-  console.log('in mutation updateSignedIn:', payload);
+  console.log('in mutation updateSignedIn:', payload)
   if (!payload) {
     state.user = {}
     state.editorMode = false

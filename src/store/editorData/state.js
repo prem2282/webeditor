@@ -33,6 +33,6 @@ export default function () {
     user: {
     },
     signedIn: false,
-    isEditor: false,
+    isEditor: false
   }
 }
