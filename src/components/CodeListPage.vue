@@ -1,83 +1,54 @@
 <template>
   <q-page>
-    <div>
-      <q-btn class="q-ma-sm" @click="createNewCode">Create New</q-btn>
-    </div>
-    <div :v-if="showData" class="containerClass row">
-      <div
-        class="pa-sm col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 inline"
-        v-for="(code, index) in this.codeList"
-        :key="code.id"
-        :id="code.id"
-      >
-        <div class="col-12-xs col-6-sm col-3-xl q-ma-xs">
-          <q-card class="card-class my-card text-white ">
-            <q-card-section @click="viewSelected(index)">
-              <div class="text-h6">{{ code.seq_num }}. {{ code.title }}</div>
-              <div class="text-subtitle2 text-grey">
-                {{ code.subject }} {{ code.section }}
-              </div>
-            </q-card-section>
-
-            <q-card-actions v-if="isEditor">
-              <q-btn
-                icon="brush"
-                class="bg-blue"
-                @click="editSelected(index)"
-                dense
-                round
-              ></q-btn>
-              <q-btn
-                icon="delete"
-                class="bg-red"
-                @click="deletePrompt(index)"
-                dense
-                round
-              ></q-btn>
-            </q-card-actions>
-          </q-card>
+    <div
+      class = 'q-ma-lg'
+      v-for="(subject, index) in this.subjects"
+      :key="subject+index"
+      :id="subject+index"
+    >
+      <div class = "row q-ma-lg">
+        <div class = "text-h4">{{subject}}</div>
+        <div>
+          <q-btn v-if="isEditor" class="q-ml-lg" @click="createNewCode" icon="add">Create New</q-btn>
         </div>
       </div>
+      <div class="containerClass row q-pa-xl bg-blue-1">
+        <div
+          class="q-pa-sm col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 inline"
+          v-for="(code, index) in codeList.filter(code => code.subject === subject)"
+          :key="code.id"
+          :id="code.id"
+        >
+          <div class="col-12-xs col-6-sm col-3-xl q-ma-xs">
+            <q-card class="card-class my-card text-white ">
+              <q-card-section @click="viewSelected(index)">
+                <div class="text-h6">{{ code.seq_num }}. {{ code.title }}</div>
+                <div class="text-subtitle2 text-grey">
+                  {{ code.subject }} {{ code.section }}
+                </div>
+              </q-card-section>
 
-      <!-- <div class="pa-sm" v-for="(code, index) in this.codeList" :key="code.id" :id="code.id">
-
-          <div class="row q-mb-sm">
-            <div class='col-1'></div>
-            <div class='col-2'>
-              <div class="q-pa-sm  bg-blue-1 text-center">{{code.subject}}</div>
-              <div class="q-pa-sm  bg-blue-1 text-center">{{code.level}}  {{code.section}}</div>
-            </div>
-            <div class="col-1 ">
-              <div class="q-pa-sm bg-blue-3 text-center align-center seqNumClass">{{code.seq_num}}</div>
-            </div>
-            <div class="col-6 grid" @click="viewSelected(index)">
-              <q-item clickable class="q-pa-sm titleClass">
-                <div>{{code.title}}</div>
-                </q-item>
-            </div>
-            <div class="col-1">
-              <div class="row">
-                <q-btn v-if="isEditor" class='col-12' @click="editSelected(index)" color='blue-4' icon='brush'></q-btn>
-                <q-btn v-if="isEditor" class='col-12' @click="deletePrompt(index)" color='blue-6' icon='delete'></q-btn>
-              </div>
-            </div>
-
+              <q-card-actions v-if="isEditor">
+                <q-btn
+                  icon="brush"
+                  class="bg-blue"
+                  @click="editSelected(index)"
+                  dense
+                  round
+                ></q-btn>
+                <q-btn
+                  icon="delete"
+                  class="bg-red"
+                  @click="deletePrompt(index)"
+                  dense
+                  round
+                ></q-btn>
+              </q-card-actions>
+            </q-card>
           </div>
+        </div>
 
-            <q-dialog v-model="deleteConfirm" persistent>
-              <q-card>
-                <q-card-section class="row items-center">
-                  <q-avatar icon="delete" color="primary" text-color="white" />
-                  <span class="q-ml-sm">Are you sure to delete</span>
-                </q-card-section>
-
-                <q-card-actions align="right">
-                  <q-btn flat label="Cancel" color="primary" @click='cancelDelete' v-close-popup />
-                  <q-btn flat label="Yes" color="danger" @click='performDelete' v-close-popup />
-                </q-card-actions>
-              </q-card>
-            </q-dialog>
-        </div> -->
+      </div>
     </div>
   </q-page>
 </template>
@@ -92,7 +63,8 @@ export default {
     return {
       deleteConfirm: false,
       deleteMarkedIndex: null,
-      cardClass: 'my-card bg-black text-white q-ma-sm'
+      cardClass: 'my-card bg-black text-white q-ma-sm',
+      showData: false
     }
   },
   computed: {
@@ -100,19 +72,18 @@ export default {
       'codeList',
       'showHelp',
       'editorMode',
-      'isEditor'
-    ]),
-    showData: function () {
-      if (this.codeList) {
-        return true
-      } else {
-        return false
-      }
-    }
+      'isEditor',
+      'subjects'
+    ])
+  },
+
+  beforeMount: function () {
+    this.getCodeList()
   },
 
   mounted: function () {
-    this.getCodeList()
+    console.log('mounted subjects', this.subjects)
+    console.log('mounted codeLust', this.codeList)
   },
   methods: {
     ...mapActions('editorData', [
@@ -127,10 +98,11 @@ export default {
     getCodeList: async function () {
       if (this.codeList.length === 0) {
         await axios.get(targetUrl).then(res => {
-          const codelist = res.data
           if (res.data.length > 0) {
-            console.log('res.data', codelist)
             this.updateCodeList(res.data)
+            console.log([...new Set(res.data.map(item => item.subject))])
+            this.subjects = [...new Set(res.data.map(item => item.subject))]
+            this.showData = true
           } else {
             console.log('no data')
           }
@@ -263,12 +235,13 @@ export default {
 }
 
 .containerClass {
-  width: 98vw;
+  width: 100vw;
 }
 
 .card-class {
   /* width: 100%; */
   background-color: rgb(14, 9, 37);
+  cursor: pointer;
 }
 
 .my-card {
@@ -277,6 +250,7 @@ export default {
 }
 
 .my-card:hover {
-  background-color: rgb(44, 43, 41);
+  background-color: rgb(26, 25, 31);
+  color: gray;
 }
 </style>

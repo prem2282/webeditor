@@ -76,7 +76,6 @@
               <div class='row float-right'>
                 <q-btn dense class="q-ma-xs" @click="updateShowHelp(showHelp)" round color="negative" icon="import_contacts">
                   <q-tooltip content-class="bg-accent">Show Help Text</q-tooltip>
-                  <div v-text="dummyKey"></div>
                 </q-btn>
                 <q-btn dense class="q-ma-xs" v-model='vertView' round @click='vertView=!vertView' color='primary'>
                     <q-icon v-if="vertView" name="view_column" />

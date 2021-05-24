@@ -34,6 +34,11 @@ export function codeList (state) {
   return state.codeList
 }
 
+export function subjects (state) {
+  console.log('returning subjects:', state.subjects)
+  return state.subjects
+}
+
 export function selectedCode (state) {
   return state.selectedCode
 }

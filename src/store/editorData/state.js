@@ -26,6 +26,7 @@ export default function () {
     storedData: [],
     menuData: [],
     codeList: [],
+    subjects: [],
     selectedCode: '',
     vertView: false,
     showHelp: true,

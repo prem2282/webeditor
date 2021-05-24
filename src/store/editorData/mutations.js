@@ -39,6 +39,7 @@ export function updateMenuData (state, payload) {
 }
 export function updateCodeList (state, payload) {
   state.codeList = payload
+  state.subjects = [...new Set(payload.map(item => item.subject))]
 }
 
 export function updateSelectedCode (state, payload) {
