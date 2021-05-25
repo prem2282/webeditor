@@ -5,7 +5,7 @@ export function updatePageContent ({ commit }, payload) {
 }
 
 export function updateCodeListIndex ({ commit }, payload) {
-  console.log('payload in updateBoxType', payload)
+  console.log('payload in updateCodeListIndex', payload)
   commit('updateCodeListIndex', payload)
   //   console.log(data)
 }

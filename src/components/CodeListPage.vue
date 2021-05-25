@@ -15,13 +15,13 @@
       <div class="containerClass row q-pa-xl bg-blue-1">
         <div
           class="q-pa-sm col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 inline"
-          v-for="(code, index) in codeList.filter(code => code.subject === subject)"
+          v-for="code in codeList.filter(code => code.subject === subject)"
           :key="code.id"
           :id="code.id"
         >
           <div class="col-12-xs col-6-sm col-3-xl q-ma-xs">
             <q-card class="card-class my-card text-white ">
-              <q-card-section @click="viewSelected(index)">
+              <q-card-section @click="viewSelected(code.id)">
                 <div class="text-h6">{{ code.seq_num }}. {{ code.title }}</div>
                 <div class="text-subtitle2 text-grey">
                   {{ code.subject }} {{ code.section }}
@@ -32,20 +32,36 @@
                 <q-btn
                   icon="brush"
                   class="bg-blue"
-                  @click="editSelected(index)"
+                  @click="editSelected(code.id)"
                   dense
                   round
                 ></q-btn>
                 <q-btn
                   icon="delete"
                   class="bg-red"
-                  @click="deletePrompt(index)"
+                  @click="deletePrompt(code.id)"
                   dense
                   round
                 ></q-btn>
               </q-card-actions>
             </q-card>
           </div>
+          <q-dialog v-model="deleteConfirm">
+            <q-card>
+              <q-card-section>
+                <div class="text-h6">Delete Confirmation</div>
+              </q-card-section>
+
+              <q-card-section class="q-pt-none">
+                Are you sure you want to delete?
+              </q-card-section>
+
+              <q-card-actions align="right" class="text-primary">
+                <q-btn class="negative" flat label="Yes.Delete it" @click="performDelete" />
+                <q-btn flat label="No" v-close-popup />
+              </q-card-actions>
+            </q-card>
+          </q-dialog>
         </div>
 
       </div>
@@ -62,7 +78,7 @@ export default {
   data () {
     return {
       deleteConfirm: false,
-      deleteMarkedIndex: null,
+      deleteMarkedId: null,
       cardClass: 'my-card bg-black text-white q-ma-sm',
       showData: false
     }
@@ -110,9 +126,9 @@ export default {
       }
     },
 
-    getSelectedCode: async function (index) {
-      this.updateSelectedCode(index)
-      const selectedCodeId = this.codeList[index].id
+    getSelectedCode: async function (id) {
+      this.updateSelectedCode(id)
+      const selectedCodeId = id
       const codeURL = targetUrl + selectedCodeId
       console.log('codeURL', codeURL)
       if (selectedCodeId > 0) {
@@ -120,7 +136,7 @@ export default {
           console.log('response in codeURL:', res.data)
           if (res.data.id === selectedCodeId) {
             this.updatePageContent(res.data)
-            this.updateCodeListIndex(index)
+            this.updateCodeListIndex(id)
             this.updateShowHelp(this.showHelp)
             this.$router.push({ path: 'editor' })
           } else {
@@ -131,35 +147,36 @@ export default {
       }
     },
 
-    editSelected: function (index) {
+    editSelected: function (id) {
       const editMode = true
       this.updateEditorMode(editMode)
-      this.getSelectedCode(index)
+      this.getSelectedCode(id)
     },
-    viewSelected: function (index) {
+    viewSelected: function (id) {
       const editMode = false
       this.updateEditorMode(editMode)
-      this.getSelectedCode(index)
+      this.getSelectedCode(id)
     },
 
-    deletePrompt: function (index) {
+    deletePrompt: function (id) {
+      console.log('deleteMarkedId:', id)
       this.deleteConfirm = true
-      this.deleteMarkedIndex = index
+      this.deleteMarkedId = id
     },
 
     cancelDelete: function () {
       this.deleteConfirm = false
-      this.deleteMarkedIndex = null
+      this.deleteMarkedId = null
     },
 
     performDelete: async function () {
-      const deleteId = this.codeList[this.deleteMarkedIndex].id
-      const deleteURL = targetUrl + 'delete/' + deleteId
+      this.deleteConfirm = false
+      const deleteURL = targetUrl + 'delete/' + this.deleteMarkedId
 
       await axios.delete(deleteURL).then(res => {
         console.log('deleted', res)
         if (res.status === 204) {
-          this.deleteFromCodeList(this.deleteMarkedIndex)
+          this.deleteFromCodeList(this.deleteMarkedId)
           console.log('deleted from codeList')
           this.deletedMessage('Code Deleted', 'red')
         } else {

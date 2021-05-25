@@ -28,7 +28,9 @@ export function updatePageContent (state, payload) {
 }
 
 export function updateCodeListIndex (state, payload) {
-  state.codeListIndex = payload
+  const selectedCode = state.codeList.filter(code => code.id === payload)[0]
+  const codeListIndex = state.codeList.indexOf(selectedCode)
+  state.codeListIndex = codeListIndex
 }
 
 export function updateStoredData (state, payload) {
@@ -52,7 +54,9 @@ export function addToCodeList (state, payload) {
 
 export function deleteFromCodeList (state, payload) {
   console.log('index to delete', payload)
-  state.codeList.splice(payload, 1)
+  const selectedCode = state.codeList.filter(code => code.id === payload)[0]
+  const codeListIndex = state.codeList.indexOf(selectedCode)
+  state.codeList.splice(codeListIndex, 1)
 }
 
 export function updateToCodeList (state, { payload, index }) {

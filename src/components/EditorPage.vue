@@ -276,6 +276,7 @@ export default {
       this.pageContent.title = this.title_
       this.pageContent.code_1 = this.head_
       this.updatePageContent(this.pageContent)
+      this.saveClicked()
     },
 
     nextClicked: function () {
@@ -311,9 +312,9 @@ export default {
       }
     },
 
-    getSelectedCode: async function (index) {
-      this.updateSelectedCode(index)
-      const selectedCodeId = this.codeList[index].id
+    getSelectedCode: async function (id) {
+      this.updateSelectedCode(id)
+      const selectedCodeId = id
       const codeURL = targetUrl + selectedCodeId
       console.log('codeURL', codeURL)
       if (selectedCodeId > 0) {
@@ -323,7 +324,7 @@ export default {
             console.log('response in codeURL:', res.data)
             if (res.data.id === selectedCodeId) {
               this.updatePageContent(res.data)
-              this.updateCodeListIndex(index)
+              this.updateCodeListIndex(id)
               this.updateTempState(this.pageContent)
               this.updateShowHelp(this.showHelp)
             } else {
