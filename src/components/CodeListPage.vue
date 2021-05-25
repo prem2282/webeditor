@@ -97,10 +97,6 @@ export default {
     this.getCodeList()
   },
 
-  mounted: function () {
-    console.log('mounted subjects', this.subjects)
-    console.log('mounted codeLust', this.codeList)
-  },
   methods: {
     ...mapActions('editorData', [
       'updateCodeList',
@@ -116,7 +112,6 @@ export default {
         await axios.get(targetUrl).then(res => {
           if (res.data.length > 0) {
             this.updateCodeList(res.data)
-            console.log([...new Set(res.data.map(item => item.subject))])
             this.subjects = [...new Set(res.data.map(item => item.subject))]
             this.showData = true
           } else {
@@ -130,17 +125,14 @@ export default {
       this.updateSelectedCode(id)
       const selectedCodeId = id
       const codeURL = targetUrl + selectedCodeId
-      console.log('codeURL', codeURL)
       if (selectedCodeId > 0) {
         await axios.get(codeURL).then(res => {
-          console.log('response in codeURL:', res.data)
           if (res.data.id === selectedCodeId) {
             this.updatePageContent(res.data)
             this.updateCodeListIndex(id)
             this.updateShowHelp(this.showHelp)
             this.$router.push({ path: 'editor' })
           } else {
-            console.log('no data')
             return null
           }
         })
@@ -159,7 +151,6 @@ export default {
     },
 
     deletePrompt: function (id) {
-      console.log('deleteMarkedId:', id)
       this.deleteConfirm = true
       this.deleteMarkedId = id
     },
@@ -174,13 +165,10 @@ export default {
       const deleteURL = targetUrl + 'delete/' + this.deleteMarkedId
 
       await axios.delete(deleteURL).then(res => {
-        console.log('deleted', res)
         if (res.status === 204) {
           this.deleteFromCodeList(this.deleteMarkedId)
-          console.log('deleted from codeList')
           this.deletedMessage('Code Deleted', 'red')
         } else {
-          console.log('not deleted')
           this.deletedMessage('Code Not Deleted', 'orange')
         }
       })
@@ -217,7 +205,6 @@ export default {
         subject: '',
         title: ''
       }
-      console.log(payload)
       this.updatePageContent(payload)
       const editMode = true
       this.updateEditorMode(editMode)

@@ -259,7 +259,6 @@ export default {
     },
 
     updateTempState: function (pageContent) {
-      console.log('in updateTempState', pageContent)
       this.subject_ = pageContent.subject
       this.level_ = pageContent.level
       this.section_ = pageContent.section
@@ -280,9 +279,11 @@ export default {
     },
 
     nextClicked: function () {
-      let index = this.codeListIndex + 1
-      if (index === this.codeList.length) {
-        index = 0
+      const currentCode = this.codeList[this.codeListIndex]
+      const subset = this.codeList.filter(code => code.subject === this.codeList[this.codeListIndex].subject)
+      const indexInSubset = subset.indexOf(currentCode)
+      const nextIndex = indexInSubset + 1
+      if (nextIndex === subset.length) {
         this.$q.notify({
           message: 'No more. Already at the end!',
           color: 'red',
@@ -291,15 +292,17 @@ export default {
           icon: 'warning'
         })
       } else {
-        console.log('index:', index)
-        this.getSelectedCode(index)
+        const codeId = subset[nextIndex].id
+        this.getSelectedCode(codeId)
       }
     },
 
     backClicked: function () {
-      let index = this.codeListIndex - 1
-      if (index === -1) {
-        index = 0
+      const currentCode = this.codeList[this.codeListIndex]
+      const subset = this.codeList.filter(code => code.subject === this.codeList[this.codeListIndex].subject)
+      const indexInSubset = subset.indexOf(currentCode)
+      const nextIndex = indexInSubset - 1
+      if (nextIndex === -1) {
         this.$q.notify({
           message: 'No more. Already at the beginning!',
           color: 'red',
@@ -308,7 +311,8 @@ export default {
           icon: 'warning'
         })
       } else {
-        this.getSelectedCode(index)
+        const codeId = subset[nextIndex].id
+        this.getSelectedCode(codeId)
       }
     },
 
@@ -316,19 +320,16 @@ export default {
       this.updateSelectedCode(id)
       const selectedCodeId = id
       const codeURL = targetUrl + selectedCodeId
-      console.log('codeURL', codeURL)
       if (selectedCodeId > 0) {
         await axios
           .get(codeURL)
           .then(res => {
-            console.log('response in codeURL:', res.data)
             if (res.data.id === selectedCodeId) {
               this.updatePageContent(res.data)
               this.updateCodeListIndex(id)
               this.updateTempState(this.pageContent)
               this.updateShowHelp(this.showHelp)
             } else {
-              console.log('no data')
               return null
             }
           })
@@ -345,7 +346,6 @@ export default {
     },
 
     updateRecord: async function () {
-      console.log('to update:', this.pageContent)
       const createUrl = 'https://prem2282.pythonanywhere.com/api/CodeList/create'
       let updateUrl = 'https://prem2282.pythonanywhere.com/api/CodeList/edit/'
 
@@ -375,43 +375,25 @@ export default {
         await axios
           .put(updateUrl, mydata)
           .then(res => {
-            console.log(res)
             if (res.status === 200) {
               this.updatePageContent(this.pageContent)
               this.updateTempState(this.pageContent)
               this.updateToCodeList({ payload: mydata, index: this.codeListIndex })
-              console.log('updated')
               this.updatedMessage('Document Updated', true)
             } else {
               this.updatedMessage('Document Updated', false)
-              console.log('not updated')
             }
           })
       } else {
-        console.log('before post', mydata)
         await axios
           .post(createUrl, mydata)
           .then(res => {
-            console.log(res)
             if (res.status === 201) {
-              // console.log('created')
-              // console.log('res.data', res.data)
-              // const payload = {
-              //   htmlContent: this.pageContent.htmlContent,
-              //   cssContent: this.pageContent.cssContent,
-              //   jsContent: this.pageContent.jsContent,
-              //   headContent: this.pageContent.headContent,
-              //   title: this.pageContent.title,
-              //   helpText: this.pageContent.helpText,
-              //   id: res.data.id
-              // }
-              // console.log(payload)
               this.updatePageContent(res.data)
               this.addToCodeList(res.data)
               this.updatedMessage('Document Created', true)
             } else {
               this.updatedMessage('Document Not Created', false)
-              console.log('not updated')
             }
           })
       }
@@ -423,7 +405,6 @@ export default {
       this.updateShowHelp(this.showHelp)
     },
     saveHelpText: function () {
-      console.log('saving text')
     },
     updatedMessage (message, success) {
       const color = success ? 'green' : 'red'
@@ -439,15 +420,9 @@ export default {
 
   },
   mounted: function () {
-    console.log('in mounted', this.pageContent)
     this.updateTempState(this.pageContent)
-    // this.subject_ = this.codeListIndex > 0 ? this.codeList[this.codeListIndex].subject : ''
-    // console.log('subject_ in mounted', this.subject_)
   },
   beforeMount: function () {
-    console.log('beforeMount')
-    console.log('codeList', this.codeList)
-    console.log('pageContent', this.pageContent)
     if (!this.pageContent.description_1 & !this.showHelp) {
       this.updateShowHelp(this.showHelp)
     }
