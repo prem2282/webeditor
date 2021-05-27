@@ -1,4 +1,6 @@
 <template>
+  <div>
+  <q-btn @click="splitHTML(mycontent)">Dummy button</q-btn>
   <AceEditor
     v-model="mycontent"
     @init="editorInit"
@@ -26,6 +28,7 @@
       }
     ]"
   />
+  </div>
 </template>
 
 <script>
@@ -92,6 +95,31 @@ export default {
     },
     updateContent: function (mycontent) {
       console.log('data will be updated with:', mycontent)
+    },
+    splitHTML: function (myHTML) {
+      const myHTMLContent = '<div>' + myHTML + '</div>'
+      const emptyBox = '<div>' + '</div>'
+      const newContent = new DOMParser().parseFromString(emptyBox, 'text/xml')
+      const htmlParts = new DOMParser().parseFromString(myHTMLContent, 'text/xml')
+      console.log(htmlParts.childElementCount)
+      const topLayers = [...htmlParts.children]
+      console.log({ topLayers })
+      console.log(topLayers[0].children[0])
+
+      console.log(newContent.children[0])
+      newContent.children[0].appendChild(topLayers[0].children[0])
+      console.log(newContent.children[0])
+      console.log(newContent.children[0])
+      this.mycontent = newContent.children[0].innerHTML
+      // topLayers.forEach(layer => {
+      //   console.log(layer)
+      //   console.log(layer.childElementCount)
+
+      //   console.log(layer)
+      //   if (this.editorBox === 'html') {
+      //     this.mycontent = newContent.innerHTML
+      //   }
+      // })
     }
   }
 }
