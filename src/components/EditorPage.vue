@@ -112,59 +112,37 @@
         <div :class="vertView?'outerBoxVert':'outerBoxHor'" v-if="!showHelp">
             <div v-show="showCodeBlocks" class="codeBox" :class="vertView?'vertView':'horView'">
                 <div v-if="showHTML" class="box1 bg-red-8" :class="htmlBoxClass">
-                  <div class='row q-pl-md'>
-                    <h6>HTML</h6>
-                    <div class='col'>
-                      <div class='float-right'>
-                        <q-btn v-show="vertView" @click='fullViewHtml=!fullViewHtml'  :icon="fullViewHtml?'close_fullscreen':'open_in_full'"  />
-                      </div>
-                    </div>
-                  </div>
                   <AceEditor
                       :pageContent= this.pageContent
                       editorBox = 'html'
                       :vertView = this.vertView
-                      :height = this.htmlH
+                      :height = this.aceHeight
                       :width = this.aceWidth
                   />
                 </div>
                 <div v-if="showCSS" class="box2 bg-cyan-8" :class="!showCSS ? 'boxclose':''">
-                  <div class='row q-pl-md'>
-                    <h6>CSS</h6>
-                    <div class='col'>
-                      <div class='float-right'>
-                        <q-btn v-show="vertView" @click='fullViewCss=!fullViewCss' :icon="fullViewCss?'close_fullscreen':'open_in_full'" />
-                      </div>
-                    </div>
-                  </div>
                     <AceEditor
                         :pageContent= this.pageContent
                         editorBox = 'css'
                         :vertView = this.vertView
-                        :height = this.cssH
+                        :height = this.aceHeight
                         :width = this.aceWidth
                     />
                 </div>
                 <div v-if="showJS" class="box3 bg-lime-8" :class="!showJS ? 'boxclose':''">
-                  <div class='row q-pl-md'>
-                    <h6>JS</h6>
-                    <div class='col'>
-                      <div class='float-right'>
-                        <q-btn v-show="vertView" @click='fullViewJs=!fullViewJs' :icon="fullViewJs?'close_fullscreen':'open_in_full'" />
-                      </div>
-                    </div>
-                  </div>
                   <AceEditor
                       :pageContent= this.pageContent
                       editorBox = 'js'
                       :vertView = this.vertView
-                      :height = this.jsH
+                      :height = this.aceHeight
                       :width = this.aceWidth
                   />
                 </div>
             </div>
-            <div>
-                <iframe class="resultBox" :class="vertView?'vertView':'horView'" :srcDoc="this.outputValue" frameborder="0"></iframe>
+            <q-separator vertical class=""
+            />
+            <div v-touch-pan.horizontal.prevent.mouse="handlePan">
+                <iframe class="resultBox" :width="resultBoxWidth" :class="vertView?'vertView':'horView'" :srcDoc="this.outputValue" frameborder="0"></iframe>
             </div>
         </div>
     </q-page>
@@ -190,9 +168,6 @@ export default {
       showHTML: false,
       showCSS: false,
       showJS: false,
-      fullViewHtml: false,
-      fullViewCss: false,
-      fullViewJs: false,
       showTitle: false,
       showCdn: false,
       vertView: false,
@@ -214,32 +189,13 @@ export default {
       }
     },
 
-    aceWidth: function () {
-      const totalEditors = this.showHTML + this.showCSS + this.showJS
+    resultBoxWidth: function () {
       if (this.vertView) {
         return '50vw'
       } else {
-        return String(100 / totalEditors) + 'vw'
+        return '100vw'
       }
     },
-    htmlH: function () {
-      return this.aceHeight(this.fullViewHtml)
-    },
-    cssH: function () {
-      return this.aceHeight(this.fullViewCss)
-    },
-    jsH: function () {
-      return this.aceHeight(this.fullViewJs)
-    }
-  },
-  components: {
-    AceEditor,
-    HelpTextEditor,
-    HelpTextViewer
-  },
-
-  methods: {
-    ...mapActions('editorData', ['updatePageContent', 'updateCDNText', 'addToCodeList', 'updateToCodeList', 'setView', 'updateShowHelp', 'updateSelectedCode', 'updateCodeListIndex']),
 
     aceHeight: function (fullView) {
       const totalEditors = this.showHTML + this.showCSS + this.showJS
@@ -257,6 +213,24 @@ export default {
         return '40vh'
       }
     },
+
+    aceWidth: function () {
+      const totalEditors = this.showHTML + this.showCSS + this.showJS
+      if (this.vertView) {
+        return '50vw'
+      } else {
+        return String(100 / totalEditors) + 'vw'
+      }
+    }
+  },
+  components: {
+    AceEditor,
+    HelpTextEditor,
+    HelpTextViewer
+  },
+
+  methods: {
+    ...mapActions('editorData', ['updatePageContent', 'updateCDNText', 'addToCodeList', 'updateToCodeList', 'setView', 'updateShowHelp', 'updateSelectedCode', 'updateCodeListIndex']),
 
     updateTempState: function (pageContent) {
       this.subject_ = pageContent.subject
@@ -406,6 +380,17 @@ export default {
     },
     saveHelpText: function () {
     },
+
+    handlePan: function ({ evt, ...info }) {
+      if (info.isFirst) {
+        console.log('isFirst')
+        console.log(info)
+      } else if (info.isFinal) {
+        console.log('isFinal')
+        console.log(info)
+      }
+    },
+
     updatedMessage (message, success) {
       const color = success ? 'green' : 'red'
 
@@ -431,11 +416,7 @@ export default {
     this.showCSS = !!this.pageContent.code_3
     this.showJS = !!this.pageContent.code_4
 
-    this.fullViewHtml = !this.showCSS && !this.showJS
-    this.fullViewCss = !this.showHTML && !this.showJS
-    this.fullViewJs = !this.showJS && !this.showCSS
-
-    this.vertView = this.fullViewHtml || this.fullViewCss || this.fullViewJs
+    // this.vertView = this.fullViewHtml || this.fullViewCss || this.fullViewJs
   }
 }
 
