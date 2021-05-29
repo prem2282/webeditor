@@ -13,6 +13,7 @@
           <q-tooltip content-class="bg-black">{{clearView?'load all':'remove all'}}</q-tooltip>
         </q-btn>
         <q-btn
+          :disable="showingLines.length === lines.length"
           class='q-mr-sm'
           rounded
           dense
@@ -183,16 +184,12 @@ export default {
       this.stepView = true
     },
     stepInto: function () {
-      // this.stepView = true
-      // this.lines = myHTML.split('\n')
+      this.stepView = true
       this.clearView = false
       if (this.showLine.every((item) => item === true)) {
         this.showLine = this.showLine.map(item => false)
         this.splitLines(this.mycontent)
       }
-      // if (!this.splitted) {
-      //   this.splitLines(this.mycontent)
-      // }
       console.log(this.lines)
       console.log(this.showLine)
 
