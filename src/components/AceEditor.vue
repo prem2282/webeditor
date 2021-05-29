@@ -143,9 +143,11 @@ export default {
       if (this.clearView) {
         this.clearView = false
         this.showingLines = [...this.lines]
+        this.showLine = this.showLine.map(item => true)
       } else {
         this.clearView = true
         this.showingLines = []
+        this.showLine = this.showLine.map(item => false)
       }
     },
     splitLines: function (value) {
