@@ -4,7 +4,8 @@
     <div class='col'>
         <q-btn dense :label="editorBox" class='float-left q-mr-lg'></q-btn>
         <q-btn class='q-mr-sm' rounded dense @click="clearBox()" :icon="clearView?'replay':'delete_sweep'"/>
-        <q-btn class='q-mr-sm' rounded dense @click="stepInto()" icon='hiking'/>
+        <q-btn class='q-mr-sm' rounded dense @click="stepInto()" icon='redo'/>
+        <q-btn v-if="stepView & showingLines.length > 0" class='q-mr-sm' rounded dense @click="undoStepInto()" icon='undo'/>
       <div class='float-right'>
         <q-btn dense v-show="vertView" @click='fullView=!fullView'  :icon="fullView?'close_fullscreen':'open_in_full'"  />
 
@@ -181,6 +182,21 @@ export default {
           this.showLine[index] = true
           if (this.lines[index].length > 0) {
             addedLine = true
+          }
+        }
+      }
+    },
+    undoStepInto: function () {
+      this.clearView = false
+      let removedLine = false
+
+      for (let index = this.showingLines.length - 1; index >= 0; index--) {
+        if (!removedLine) {
+          const firstTrueIndex = this.showingLines.length - 1
+          this.showLine[firstTrueIndex] = false
+          this.showingLines.pop()
+          if (this.showingLines[this.showingLines.length - 1].length > 0) {
+            removedLine = true
           }
         }
       }
