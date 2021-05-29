@@ -80,7 +80,7 @@
                 <q-btn dense class="q-ma-xs" v-model='vertView' round @click='vertView=!vertView' color='primary'>
                     <q-icon v-if="vertView" name="view_column" />
                     <q-icon v-else name="vertical_split" />
-                    <q-tooltip content-class="bg-accent"></q-tooltip>
+                    <q-tooltip content-class="bg-accent">Change view</q-tooltip>
                 </q-btn>
                 <q-btn  v-if="editorMode" dense class="q-ma-xs" @click='saveClicked' round color="positive" icon="save">
                   <q-tooltip content-class="bg-accent">Save your document</q-tooltip>

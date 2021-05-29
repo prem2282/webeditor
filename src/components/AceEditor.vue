@@ -2,10 +2,33 @@
   <div>
   <div class='row'>
     <div class='col'>
-        <q-btn dense :label="editorBox" class='float-left q-mr-lg'></q-btn>
-        <q-btn class='q-mr-sm' rounded dense @click="clearBox()" :icon="clearView?'replay':'delete_sweep'"/>
-        <q-btn class='q-mr-sm' rounded dense @click="stepInto()" icon='redo'/>
-        <q-btn v-if="stepView & showingLines.length > 0" class='q-mr-sm' rounded dense @click="undoStepInto()" icon='undo'/>
+        <q-btn dense :label="editorBox" class='float-left q-mr-lg'>
+        </q-btn>
+        <q-btn
+          class='q-mr-sm'
+          rounded
+          dense
+          @click="clearBox()"
+          :icon="clearView?'replay':'delete_sweep'">
+          <q-tooltip content-class="bg-black">{{clearView?'load all':'remove all'}}</q-tooltip>
+        </q-btn>
+        <q-btn
+          class='q-mr-sm'
+          rounded
+          dense
+          @click="stepInto()"
+          icon='redo'>
+          <q-tooltip content-class="bg-black">step line by line</q-tooltip>
+        </q-btn>
+        <q-btn
+        v-if="stepView & showingLines.length > 0"
+        class='q-mr-sm'
+        rounded
+        dense
+        @click="undoStepInto()"
+        icon='undo'>
+        <q-tooltip content-class="bg-black">undo last step</q-tooltip>
+        </q-btn>
       <div class='float-right'>
         <q-btn dense v-show="vertView" @click='fullView=!fullView'  :icon="fullView?'close_fullscreen':'open_in_full'"  />
 
