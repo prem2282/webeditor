@@ -2,7 +2,7 @@
     <q-page>
         <div class="row justify-center q-pr-sm q-pl-sm bg-black">
             <div  class="col-1">
-              <q-btn  class="q-ma-xs" @click='goBack' dense round color="primary" icon="home" />
+              <q-btn glossy class="q-ma-xs" @click='goBack' dense round color="primary" icon="home" />
             </div>
             <div  v-if="editorMode"  class="col-2">
               <q-btn  class="q-ma-xs" label="title" color="primary" @click="showTitle = true" />
@@ -24,7 +24,7 @@
               </q-dialog>
             </div>
             <div v-else class='col-2'>
-              <q-btn  class="q-ma-xs" :label="title_" color="primary"/>
+              <q-btn  class="q-ma-xs" :label="seq_num_ + '. ' + title_" color="transparent"/>
             </div>
 
             <div class="col-1">
@@ -57,16 +57,16 @@
                     :title = this.pageContent.title
                   />
                 </div>
-                <q-btn class="q-ma-xs" round dense icon='add' color="primary" @click="showCdn = true">
+                <q-btn class="q-ma-xs" round dense glossy icon='add' color="black" @click="showCdn = true">
                   <q-tooltip content-class="bg-accent">Add Javascript/CSS CDN libriaries</q-tooltip>
                 </q-btn>
-                <q-btn  class="q-ma-xs" v-model='showHTML' @click='showHTML=!showHTML' :color="showHTML ? 'red-8' : 'info'" label="html">
+                <q-btn glossy dense class="q-ma-xs" v-model='showHTML' @click='showHTML=!showHTML' :color="showHTML ? 'black' : 'black'" :text-color="showHTML ? 'white' : 'grey'" label="html">
                   <q-tooltip content-class="bg-accent">HTML editor</q-tooltip>
                 </q-btn>
-                <q-btn  class="q-ma-xs" v-model='showCSS' @click='showCSS=!showCSS' :color="showCSS ? 'cyan-8' : 'info'" label="css">
+                <q-btn glossy  class="q-ma-xs" v-model='showCSS' @click='showCSS=!showCSS' :color="showCSS ? 'black' : 'black'" :text-color="showCSS ? 'white' : 'grey'" label="css">
                   <q-tooltip content-class="bg-accent">CSS editor</q-tooltip>
                 </q-btn>
-                <q-btn  class="q-ma-xs" v-model='showJS' @click='showJS=!showJS' :color="showJS ? 'lime-8' : 'info'" label="js">
+                <q-btn glossy  class="q-ma-xs" v-model='showJS' @click='showJS=!showJS' :color="showJS ? 'black' : 'black'" :text-color="showJS ? 'white' : 'grey'"  label="js ">
                   <q-tooltip content-class="bg-accent">Javascript editor</q-tooltip>
                 </q-btn>
 
@@ -74,24 +74,24 @@
             </div>
             <div class="col">
               <div class='row float-right'>
-                <q-btn dense class="q-ma-xs" @click="updateShowHelp(showHelp)" round color="negative" icon="import_contacts">
+                <q-btn dense glossy class="q-ma-xs" @click="updateShowHelp(showHelp)" round color="negative" icon="import_contacts">
                   <q-tooltip content-class="bg-accent">Show Help Text</q-tooltip>
                 </q-btn>
-                <q-btn dense class="q-ma-xs" v-model='vertView' round @click='vertView=!vertView' color='primary'>
+                <q-btn dense glossy class="q-ma-xs" v-model='vertView' round @click='vertView=!vertView' color='primary'>
                     <q-icon v-if="vertView" name="view_column" />
                     <q-icon v-else name="vertical_split" />
                     <q-tooltip content-class="bg-accent">Change view</q-tooltip>
                 </q-btn>
-                <q-btn  v-if="editorMode" dense class="q-ma-xs" @click='saveClicked' round color="positive" icon="save">
+                <q-btn glossy v-if="editorMode" dense class="q-ma-xs" @click='saveClicked' round color="positive" icon="save">
                   <q-tooltip content-class="bg-accent">Save your document</q-tooltip>
                 </q-btn>
-                <q-btn  dense class="q-ma-xs" @click='backClicked' round color="positive" icon="arrow_back">
+                <q-btn glossy dense class="q-ma-xs" @click='backClicked' round color="positive" icon="arrow_back">
                   <q-tooltip content-class="bg-accent">Previous lesson</q-tooltip>
                 </q-btn>
-                <q-btn  dense class="q-ma-xs" @click='nextClicked' round color="positive" icon="arrow_forward">
+                <q-btn glossy dense class="q-ma-xs" @click='nextClicked' round color="positive" icon="arrow_forward">
                   <q-tooltip content-class="bg-accent">Next lesson</q-tooltip>
                 </q-btn>
-                <q-btn  dense class="q-ma-xs" round color="blue" @click="showProfile = true" icon="person">
+                <q-btn glossy dense class="q-ma-xs" round color="blue" @click="showProfile = true" icon="person">
                   <q-tooltip v-model="showProfile"
                   anchor="bottom start"
                   self="top middle"

@@ -2,12 +2,13 @@
   <div>
   <div class='row'>
     <div class='col'>
-        <q-btn dense :label="editorBox" class='float-left q-mr-lg'>
+        <q-btn dense :label="editorBox" class='float-left q-mr-lg' color="transparent">
         </q-btn>
         <q-btn
           class='q-mr-sm'
           rounded
           dense
+          glossy
           @click="clearBox()"
           :icon="clearView?'replay':'delete_sweep'">
           <q-tooltip content-class="bg-black">{{clearView?'load all':'remove all'}}</q-tooltip>
@@ -17,6 +18,7 @@
           class='q-mr-sm'
           rounded
           dense
+          glossy
           @click="stepInto()"
           icon='redo'>
           <q-tooltip content-class="bg-black">step line by line</q-tooltip>
@@ -26,43 +28,46 @@
         class='q-mr-sm'
         rounded
         dense
+        glossy
         @click="undoStepInto()"
         icon='undo'>
         <q-tooltip content-class="bg-black">undo last step</q-tooltip>
         </q-btn>
       <div class='float-right'>
-        <q-btn dense v-show="vertView" @click='fullView=!fullView'  :icon="fullView?'close_fullscreen':'open_in_full'"  />
+        <q-btn dense v-show="vertView" @click='setHeight()'  :icon="fullView?'close_fullscreen':'open_in_full'"  />
 
       </div>
     </div>
   </div>
-  <AceEditor
-    v-model="mycontent"
-    @init="editorInit"
-    :lang=this.editorBox
-    theme="monokai"
-    :width=this.width
-    :height="this.height?this.height:'90vh'"
-    :options="{
-      enableBasicAutocompletion: true,
-      enableLiveAutocompletion: true,
-      fontSize: 15,
-      highlightActiveLine: true,
-      enableSnippets: false,
-      showLineNumbers: true,
-      tabSize: 1,
-      showPrintMargin: false,
-      showGutter: true
-    }"
-    :commands="[
-      {
-        name: 'save',
-        bindKey: { win: 'Ctrl-s', mac: 'Command-s' },
-        exec: dataSumit,
-        readOnly: true
-      }
-    ]"
-  />
+  <div class="container">
+    <AceEditor
+      v-model="mycontent"
+      @init="editorInit"
+      :lang=this.editorBox
+      theme="monokai"
+      :width=this.width
+      :height="this.height?this.height:'90vh'"
+      :options="{
+        enableBasicAutocompletion: true,
+        enableLiveAutocompletion: true,
+        fontSize: '10pt',
+        highlightActiveLine: true,
+        enableSnippets: false,
+        showLineNumbers: true,
+        tabSize: 1,
+        showPrintMargin: false,
+        showGutter: true
+      }"
+      :commands="[
+        {
+          name: 'save',
+          bindKey: { win: 'Ctrl-s', mac: 'Command-s' },
+          exec: dataSumit,
+          readOnly: true
+        }
+      ]"
+    />
+    </div>
   </div>
 </template>
 
@@ -162,6 +167,14 @@ export default {
       require('brace/theme/monokai')
       // require('brace/snippets/javascript') // snippet
     },
+    setHeight: function () {
+      this.fullView = !this.fullView
+      if (this.fullView) {
+        this.height = '90vh'
+      } else {
+        this.height = '40vh'
+      }
+    },
     clearBox: function () {
       this.stepView = false
       console.log('clearBox')
@@ -225,4 +238,5 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+</style>
