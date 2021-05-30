@@ -11,17 +11,22 @@
           glossy
           @click="clearBox()"
           :icon="clearView?'replay':'delete_sweep'">
-          <q-tooltip content-class="bg-black">{{clearView?'load all':'remove all'}}</q-tooltip>
+          <q-tooltip
+          anchor="top middle"
+          self="bottom middle"
+          content-class="bg-black">{{clearView?'load all':'remove all'}}</q-tooltip>
         </q-btn>
         <q-btn
-          :disable="showingLines.length === lines.length"
           class='q-mr-sm'
           rounded
           dense
           glossy
           @click="stepInto()"
           icon='redo'>
-          <q-tooltip content-class="bg-black">step line by line</q-tooltip>
+          <q-tooltip
+          anchor="top middle"
+          self="bottom middle"
+          content-class="bg-black">step line by line</q-tooltip>
         </q-btn>
         <q-btn
         v-if="stepView & showingLines.length > 0"
@@ -31,7 +36,10 @@
         glossy
         @click="undoStepInto()"
         icon='undo'>
-        <q-tooltip content-class="bg-black">undo last step</q-tooltip>
+        <q-tooltip
+        anchor="top middle"
+        self="bottom middle"
+        content-class="bg-black">undo last step</q-tooltip>
         </q-btn>
       <div class='float-right'>
         <q-btn dense v-show="vertView" @click='setHeightUp()'  icon='open_in_full' />

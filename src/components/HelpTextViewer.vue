@@ -1,27 +1,36 @@
 <template>
-    <div @click='updateShowHelp(showHelp)' class="blurBox"  :class="showHelp ? 'blurBoxAppear' : 'blurBoxExit'">
-        <div class="">
-
-        </div>
-        <div v-if="showHelp" class="helpBox " >
-            <h5 class="text-yellow text-center text-uppercase">{{this.title}}</h5>
-            <div class="helpTextClass shadow-15" v-html="this.helpText">
-            </div>
-        </div>
+    <div @click=updateShowHelp(showHelpText)>
+        <q-dialog
+        v-model="showHelpText"
+        >
+          <q-card>
+            <q-card-section class="helpTextClass">
+              <q-btn icon="close" flat round dense v-close-popup @click=updateShowHelp(showHelpText) />
+              <div v-html="this.helpText"></div>
+            </q-card-section>
+          </q-card>
+        </q-dialog>
     </div>
-
 </template>
 
 <script>
+import { showHelp } from 'src/store/editorData/getters'
 import { mapGetters, mapActions } from 'vuex'
 export default {
   // props: ['helpText'],
+  data () {
+    return {
+      maximizedToggle: true
+    }
+  },
   props: {
     helpText: { type: String },
-    title: { type: String }
+    title: { type: String },
+    showHelp: { type: Boolean }
   },
   computed: {
-    ...mapGetters('editorData', ['showHelp'])
+    ...mapGetters('editorData', ['showHelp']),
+    showHelpText: showHelp
   },
   methods: {
     ...mapActions('editorData', ['updateShowHelp'])

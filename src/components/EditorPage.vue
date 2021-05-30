@@ -52,10 +52,17 @@
                   />
                 </div>
                 <div v-else>
-                  <HelpTextViewer
-                    :helpText = this.pageContent.description_1
-                    :title = this.pageContent.title
-                  />
+                  <div>
+                      <q-dialog
+                      v-model="showHelpText"
+                      >
+                        <q-card>
+                          <q-card-section class="helpTextClass">
+                            <div v-html="this.pageContent.description_1"></div>
+                          </q-card-section>
+                        </q-card>
+                      </q-dialog>
+                  </div>
                 </div>
                 <q-btn class="q-ma-xs" round dense glossy icon='add' color="black" @click="showCdn = true">
                   <q-tooltip content-class="bg-accent">Add Javascript/CSS CDN libriaries</q-tooltip>
@@ -138,6 +145,7 @@
                 <iframe class="resultBox" :width="resultBoxWidth" :class="vertView?'vertView':'horView'" :srcDoc="this.outputValue" frameborder="0"></iframe>
             </div>
         </div>
+        <div v-else class="emptyback"></div>
     </q-page>
 </template>
 
@@ -145,7 +153,6 @@
 
 import AceEditor from './AceEditor'
 import HelpTextEditor from './HelpTextEditor'
-import HelpTextViewer from './HelpTextViewer'
 import { mapGetters, mapActions } from 'vuex'
 import axios from 'axios'
 const targetUrl = 'https://prem2282.pythonanywhere.com/api/CodeList/'
@@ -173,6 +180,14 @@ export default {
     ...mapGetters('editorData', ['pageContent', 'selectedCode', 'codeList', 'showHelp', 'editorMode', 'outputValue', 'codeListIndex', 'user']),
     showCodeBlocks: function () {
       return this.showHTML || this.showCSS || this.showJS
+    },
+    showHelpText: {
+      get: function () {
+        return this.showHelp
+      },
+      set: function () {
+        this.updateShowHelp(this.showHelp)
+      }
     },
     htmlBoxClass: function () {
       if (!this.showHTML) {
@@ -218,13 +233,15 @@ export default {
   },
   components: {
     AceEditor,
-    HelpTextEditor,
-    HelpTextViewer
+    HelpTextEditor
   },
 
   methods: {
     ...mapActions('editorData', ['updatePageContent', 'updateCDNText', 'addToCodeList', 'updateToCodeList', 'setView', 'updateShowHelp', 'updateSelectedCode', 'updateCodeListIndex']),
 
+    logout: function () {
+      console.log('nothing happens yet')
+    },
     updateTempState: function (pageContent) {
       this.subject_ = pageContent.subject
       this.level_ = pageContent.level
@@ -480,6 +497,13 @@ export default {
     height: 0;
     text-overflow: none;
     animation: boxDisAppear 1s ease-in;
+}
+
+.emptyback{
+  background: black;
+  width: 100vw;
+  height: 100vh;
+  opacity: 50%;
 }
 
 @keyframes boxAppear {

@@ -99,12 +99,18 @@ export default {
       'showHelp',
       'editorMode',
       'isEditor',
-      'subjects'
+      'subjects',
+      'signedIn'
     ])
   },
 
   beforeMount: function () {
-    this.getCodeList()
+    if (!this.signedIn) {
+      console.log('not signed in ')
+      this.$router.push({ path: '/signin' })
+    } else {
+      this.getCodeList()
+    }
   },
 
   methods: {
