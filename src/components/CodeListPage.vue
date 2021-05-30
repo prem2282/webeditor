@@ -1,5 +1,6 @@
 <template>
   <q-page>
+    <Header/>
     <div
       class = 'q-ma-lg'
       v-for="(subject, index) in this.subjects"
@@ -19,29 +20,33 @@
           :key="code.id"
           :id="code.id"
         >
-          <div class="col-12-xs col-6-sm col-3-xl q-ma-xs">
-            <q-card class="card-class my-card text-white ">
-              <q-card-section @click="viewSelected(code.id)">
+          <div class="col-12-xs col-6-sm col-3-xl q-ma-xs" >
+            <q-card class="card-class my-card text-white row">
+              <q-card-section  class="col-10  " @click="viewSelected(code.id)">
                 <div class="text-h6">{{ code.seq_num }}. {{ code.title }}</div>
                 <div class="text-subtitle2 text-grey">
                   {{ code.subject }} {{ code.section }}
                 </div>
               </q-card-section>
 
-              <q-card-actions v-if="isEditor">
+              <q-card-actions  class="col q-ma-xs justify-center" v-if="isEditor">
                 <q-btn
                   icon="brush"
-                  class="bg-blue"
+                  class="bg-black"
                   @click="editSelected(code.id)"
+                  text-color="yellow"
                   dense
+                  glossy
                   round
                 ></q-btn>
                 <q-btn
                   icon="delete"
-                  class="bg-red"
+                  class="bg-black"
                   @click="deletePrompt(code.id)"
+                  text-color="red-4"
                   dense
                   round
+                  glossy
                 ></q-btn>
               </q-card-actions>
             </q-card>
@@ -72,6 +77,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import axios from 'axios'
+import Header from '../components/Header'
 const targetUrl = 'https://prem2282.pythonanywhere.com/api/CodeList/'
 
 export default {
@@ -82,6 +88,10 @@ export default {
       cardClass: 'my-card bg-black text-white q-ma-sm',
       showData: false
     }
+  },
+
+  components: {
+    Header
   },
   computed: {
     ...mapGetters('editorData', [
@@ -244,7 +254,7 @@ export default {
 
 .card-class {
   /* width: 100%; */
-  background-color: rgb(14, 9, 37);
+  background-color: rgb(16, 15, 22);
   cursor: pointer;
 }
 

@@ -1,6 +1,6 @@
 <template>
     <q-page>
-        <div class="row justify-center q-pr-sm q-pl-sm bg-black">
+        <q-header class="row justify-center q-pr-sm q-pl-sm bg-black">
             <div  class="col-1">
               <q-btn glossy class="q-ma-xs" @click='goBack' dense round color="primary" icon="home" />
             </div>
@@ -91,24 +91,17 @@
                 <q-btn glossy dense class="q-ma-xs" @click='nextClicked' round color="positive" icon="arrow_forward">
                   <q-tooltip content-class="bg-accent">Next lesson</q-tooltip>
                 </q-btn>
-                <q-btn glossy dense class="q-ma-xs" round color="blue" @click="showProfile = true" icon="person">
-                  <q-tooltip v-model="showProfile"
-                  anchor="bottom start"
-                  self="top middle"
-                  content-class="bg-blue"
-                  transition-show="rotate"
-                  transition-hide="rotate"
-                  >
-                    <q-btn round dense class="q-ma-xs" color="red" icon="close" @click="showProfile = false"/>
-                    <p dense v-text="user.fullName" class="text-subtitle1"></p>
-                    <p dense v-text="user.email" class="text-subtitle2"></p>
-                    <q-btn  dense class="q-ma-xs" color="blue-14" label="Signout"/>
-                  </q-tooltip>
-                </q-btn>
+                <q-avatar glossy pointer class="q-ma-xs" size='lg'>
+                  <img :src="user.imageUrl">
+                    <q-popup-proxy transition-show="flip-up" transition-hide="flip-down">
+                      <p class="q-pa-sm">{{user.fullName}}</p>
+                      <q-btn flat label="logout" color="blue" @click='logout'></q-btn>
+                    </q-popup-proxy>
+                </q-avatar>
               </div>
             </div>
 
-        </div>
+        </q-header>
         <div :class="vertView?'outerBoxVert':'outerBoxHor'" v-if="!showHelp">
             <div v-show="showCodeBlocks" class="codeBox" :class="vertView?'vertView':'horView'">
                 <div v-if="showHTML" class="box1 bg-red-8" :class="htmlBoxClass">
@@ -139,9 +132,9 @@
                   />
                 </div>
             </div>
-            <q-separator vertical class=""
+            <q-separator v-touch-pan.horizontal.prevent.mouse="handlePan" class=""
             />
-            <div v-touch-pan.horizontal.prevent.mouse="handlePan">
+            <div>
                 <iframe class="resultBox" :width="resultBoxWidth" :class="vertView?'vertView':'horView'" :srcDoc="this.outputValue" frameborder="0"></iframe>
             </div>
         </div>
@@ -382,12 +375,15 @@ export default {
     },
 
     handlePan: function ({ evt, ...info }) {
+      const elementBox = document.getElementsByClassName('resultBox')[0]
+      console.log(elementBox.offsetHeight)
+      console.log(info.offset.x)
       if (info.isFirst) {
         console.log('isFirst')
         console.log(info)
       } else if (info.isFinal) {
         console.log('isFinal')
-        console.log(info)
+        console.log(info.offset.x)
       }
     },
 
@@ -424,6 +420,9 @@ export default {
 
 <style scoped>
 
+.topClass {
+  z-index: 9;
+}
 .outerBoxVert {
     display: flex;
 }

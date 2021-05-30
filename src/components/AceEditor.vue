@@ -34,8 +34,8 @@
         <q-tooltip content-class="bg-black">undo last step</q-tooltip>
         </q-btn>
       <div class='float-right'>
-        <q-btn dense v-show="vertView" @click='setHeight()'  :icon="fullView?'close_fullscreen':'open_in_full'"  />
-
+        <q-btn dense v-show="vertView" @click='setHeightUp()'  icon='open_in_full' />
+        <q-btn dense v-show="vertView" @click='setHeightDown()'  icon='close_fullscreen'/>
       </div>
     </div>
   </div>
@@ -46,7 +46,7 @@
       :lang=this.editorBox
       theme="monokai"
       :width=this.width
-      :height="this.height?this.height:'90vh'"
+      :height=this.height_
       :options="{
         enableBasicAutocompletion: true,
         enableLiveAutocompletion: true,
@@ -83,24 +83,32 @@ export default {
       showingLines: [],
       showLine: [],
       lines: [],
+      height: 40,
       stepView: false,
       splitted: false,
       clearView: false
     }
   },
 
-  props: ['pageContent', 'editorBox', 'vertView', 'height', 'width', 'fullView'],
+  props: ['pageContent', 'editorBox', 'vertView', 'width', 'fullView'],
   components: {
     AceEditor
   },
   computed: {
+    height_: {
+      get: function () {
+        if (this.height) {
+          return String(this.height) + 'vh'
+        } else {
+          return '40vh'
+        }
+      }
+    },
     mycontent: {
       get: function () {
         let value = ''
-        console.log('get value')
         if (this.editorBox === 'html') {
           value = this.pageContent.code_2
-          console.log(value)
         }
         if (this.editorBox === 'css') {
           value = this.pageContent.code_3
@@ -138,11 +146,9 @@ export default {
     }
   },
   mounted: function () {
-    console.log('mounted')
     let value = ''
     if (this.editorBox === 'html') {
       value = this.pageContent.code_2
-      console.log(value)
     }
     if (this.editorBox === 'css') {
       value = this.pageContent.code_3
@@ -167,17 +173,22 @@ export default {
       require('brace/theme/monokai')
       // require('brace/snippets/javascript') // snippet
     },
-    setHeight: function () {
-      this.fullView = !this.fullView
-      if (this.fullView) {
-        this.height = '90vh'
+    setHeightUp: function () {
+      if (this.height < 100) {
+        this.height = this.height + 20
       } else {
-        this.height = '40vh'
+        this.height = 90
+      }
+    },
+    setHeightDown: function () {
+      if (this.height > 20) {
+        this.height = this.height - 20
+      } else {
+        this.height = 20
       }
     },
     clearBox: function () {
       this.stepView = false
-      console.log('clearBox')
       if (this.clearView) {
         this.clearView = false
         this.showingLines = [...this.lines]
@@ -189,7 +200,6 @@ export default {
       }
     },
     splitLines: function (value) {
-      console.log('splitLines')
       this.lines = this.mycontent.split('\n')
       this.showingLines = []
       this.showLine = this.lines.map(line => false)
@@ -203,14 +213,11 @@ export default {
         this.showLine = this.showLine.map(item => false)
         this.splitLines(this.mycontent)
       }
-      console.log(this.lines)
-      console.log(this.showLine)
 
       let addedLine = false
 
       for (let index = 0; index < this.lines.length; index++) {
         if (this.showLine[index] === false && addedLine === false) {
-          console.log(this.lines[index])
           this.showingLines.push(this.lines[index])
           this.showLine[index] = true
           if (this.lines[index].length > 0) {
