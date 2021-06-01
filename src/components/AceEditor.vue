@@ -80,6 +80,7 @@
 </template>
 
 <script>
+import { vertView } from 'src/store/editorData/getters'
 
 import AceEditor from 'vuejs-ace-editor'
 import { mapActions } from 'vuex'
@@ -105,7 +106,9 @@ export default {
   computed: {
     height_: {
       get: function () {
-        if (this.height) {
+        if (!vertView) {
+          return '45vh'
+        } else if (this.height) {
           return String(this.height) + 'vh'
         } else {
           return '40vh'

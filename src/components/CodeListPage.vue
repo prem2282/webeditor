@@ -48,6 +48,15 @@
                   round
                   glossy
                 ></q-btn>
+                <q-btn
+                  icon="file_copy"
+                  class="bg-black"
+                  @click="duplicate(code.id)"
+                  text-color="grey-8"
+                  dense
+                  round
+                  glossy
+                ></q-btn>
               </q-card-actions>
             </q-card>
           </div>
@@ -155,6 +164,20 @@ export default {
       }
     },
 
+    getSelectedCodeForDuplicate: async function (id) {
+      const codeURL = targetUrl + id
+      console.log(codeURL)
+      let code = {}
+      if (id > 0) {
+        await axios.get(codeURL).then(res => {
+          code = res.data
+        })
+      } else {
+        code = null
+      }
+      return code
+    },
+
     editSelected: function (id) {
       const editMode = true
       this.updateEditorMode(editMode)
@@ -200,27 +223,49 @@ export default {
       })
     },
 
-    createNewCode: function () {
-      const payload = {
-        code_1: '',
-        code_1_type: '',
-        code_2: '',
-        code_2_type: '',
-        code_3: '',
-        code_3_type: '',
-        code_4: '',
-        code_4_type: '',
-        contributor: '',
-        description_1: '',
-        description_2: '',
-        description_3: '',
-        id: 0,
-        level: '',
-        section: '',
-        seq_num: '',
-        subject: '',
-        title: ''
+    codeData: async function (id) {
+      let payload = {}
+      if (id) {
+        const code = await this.getSelectedCodeForDuplicate(id)
+        console.log(code)
+        code.id = 0
+        code.seq_num = ''
+        code.title = ''
+        payload = code
+      } else {
+        payload = {
+          code_1: '',
+          code_1_type: '',
+          code_2: '',
+          code_2_type: '',
+          code_3: '',
+          code_3_type: '',
+          code_4: '',
+          code_4_type: '',
+          contributor: '',
+          description_1: '',
+          description_2: '',
+          description_3: '',
+          id: 0,
+          level: '',
+          section: '',
+          seq_num: '',
+          subject: '',
+          title: ''
+        }
       }
+      return payload
+    },
+    createNewCode: function () {
+      const payload = this.codeData()
+      this.updatePageContent(payload)
+      const editMode = true
+      this.updateEditorMode(editMode)
+      this.$router.push({ path: 'editor' })
+    },
+    duplicate: async function (id) {
+      const payload = await this.codeData(id)
+      console.log(payload)
       this.updatePageContent(payload)
       const editMode = true
       this.updateEditorMode(editMode)
@@ -273,4 +318,5 @@ export default {
   background-color: rgb(26, 25, 31);
   color: gray;
 }
+
 </style>
