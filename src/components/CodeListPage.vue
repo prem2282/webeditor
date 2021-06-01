@@ -166,7 +166,6 @@ export default {
 
     getSelectedCodeForDuplicate: async function (id) {
       const codeURL = targetUrl + id
-      console.log(codeURL)
       let code = {}
       if (id > 0) {
         await axios.get(codeURL).then(res => {
@@ -227,7 +226,6 @@ export default {
       let payload = {}
       if (id) {
         const code = await this.getSelectedCodeForDuplicate(id)
-        console.log(code)
         code.id = 0
         code.seq_num = ''
         code.title = ''
@@ -265,7 +263,6 @@ export default {
     },
     duplicate: async function (id) {
       const payload = await this.codeData(id)
-      console.log(payload)
       this.updatePageContent(payload)
       const editMode = true
       this.updateEditorMode(editMode)
