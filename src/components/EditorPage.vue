@@ -76,7 +76,6 @@
                 <q-btn glossy  class="q-ma-xs" v-model='showJS' @click='showJS=!showJS' :color="showJS ? 'black' : 'black'" :text-color="showJS ? 'white' : 'grey'"  label="js ">
                   <q-tooltip content-class="bg-accent">Javascript editor</q-tooltip>
                 </q-btn>
-
               </div>
             </div>
             <div class="col">
@@ -84,9 +83,10 @@
                 <q-btn dense glossy class="q-ma-xs" @click="updateShowHelp(showHelp)" round color="negative" icon="import_contacts">
                   <q-tooltip content-class="bg-accent">Show Help Text</q-tooltip>
                 </q-btn>
-                <q-btn dense glossy class="q-ma-xs" v-model='vertView' round @click='vertView=!vertView' color='primary'>
-                    <q-icon v-if="vertView" name="view_column" />
-                    <q-icon v-else name="vertical_split" />
+                <q-btn dense glossy class="q-ma-xs" v-model='view' round @click='changeView' color='primary'>
+                    <q-icon v-if="view === 'vertical'" name="view_column" />
+                    <q-icon v-else-if="view === 'horizontal'" name="vertical_split" />
+                    <q-icon v-else name="view_module" />
                     <q-tooltip content-class="bg-accent">Change view</q-tooltip>
                 </q-btn>
                 <q-btn glossy v-if="editorMode" dense class="q-ma-xs" @click='saveClicked' round color="positive" icon="save">
@@ -109,13 +109,13 @@
             </div>
 
         </q-header>
-        <div :class="vertView?'outerBoxVert':'outerBoxHor'" v-if="!showHelp">
-            <div v-show="showCodeBlocks" class="codeBox" :style="width=codeBlockWidth" :class="vertView?'vertCode':'horView'">
+        <div :class="outerBoxClass" v-if="!showHelp">
+            <div v-show="showCodeBlocks" class="codeBox" :class="codeBoxClass">
                 <div v-if="showHTML" class="box1 bg-red-8" :class="!showHTML ? 'boxclose':''">
                   <AceEditor
                       :pageContent= this.pageContent
                       editorBox = 'html'
-                      :vertView = this.vertView
+                      :view = this.view
                       :height = this.aceHeight
                       :width = this.aceWidth
                   />
@@ -125,7 +125,7 @@
                     <AceEditor
                         :pageContent= this.pageContent
                         editorBox = 'css'
-                        :vertView = this.vertView
+                        :view = this.view
                         :height = this.aceHeight
                         :width = this.aceWidth
                     />
@@ -134,16 +134,16 @@
                   <AceEditor
                       :pageContent= this.pageContent
                       editorBox = 'js'
-                      :vertView = this.vertView
+                      :view = this.view
                       :height = this.aceHeight
                       :width = this.aceWidth
                   />
                 </div>
             </div>
-            <q-separator v-if="vertView" vertical size='10px' color='black' v-touch-pan.horizontal.prevent.mouse="handlePanVertBlock"/>
+            <q-separator v-if="view !== 'horizontal'" vertical size='10px' color='black' v-touch-pan.horizontal.prevent.mouse="handlePanVertBlock"/>
             <q-separator else size='15px' color='black' v-touch-pan.vertical.prevent.mouse="handlePanHorizBlock"/>
             <div>
-                <iframe class="resultBox" :width="resultBoxWidth" :class="vertView?'vertResult':'horResult'" :srcDoc="this.outputValue" frameborder="0"></iframe>
+                <iframe class="resultBox" :width="resultBoxWidth" :class="resultBoxClass" :srcDoc="this.outputValue" frameborder="0"></iframe>
             </div>
         </div>
         <div v-else class="emptyback"></div>
@@ -171,7 +171,7 @@ export default {
       showJS: false,
       showTitle: false,
       showCdn: false,
-      vertView: false,
+      view: 'horizontal',
       showProfile: false,
       vertCodeEnd: 0,
       horizCodeEnd: 0,
@@ -185,6 +185,76 @@ export default {
     showCodeBlocks: function () {
       return this.showHTML || this.showCSS || this.showJS
     },
+    outerBoxClass: {
+      get: function () {
+        switch (this.view) {
+          case 'vertical':
+            return 'flexBox'
+          case 'horizontal':
+            return 'gridBox'
+          case 'stack':
+            return 'flexBox'
+          default:
+            return 'flexBox'
+        }
+      }
+    },
+    codeBoxClass: {
+      get: function () {
+        switch (this.view) {
+          case 'vertical':
+            return 'gridBox'
+          case 'horizontal':
+            return 'flexBox'
+          case 'stack':
+            return 'flexBox'
+          default:
+            return 'gridBox'
+        }
+      }
+    },
+    resultBoxClass: {
+      get: function () {
+        switch (this.view) {
+          case 'vertical':
+            return 'gridBox'
+          case 'horizontal':
+            return 'flexBox'
+          case 'stack':
+            return 'gridBox'
+          default:
+            return 'gridBox'
+        }
+      }
+    },
+
+    resultBoxWidth: {
+      get: function () {
+        switch (this.view) {
+          case 'vertical':
+            if (this.vertCodeEnd > 0) {
+              return window.innerWidth - this.vertCodeEnd
+            } else {
+              return window.innerWidth
+            }
+          case 'horizontal':
+            return window.innerWidth
+          case 'stack':
+            if (this.vertCodeEnd > 0) {
+              return window.innerWidth - this.vertCodeEnd
+            } else {
+              return window.innerWidth
+            }
+          default:
+            if (this.vertCodeEnd > 0) {
+              return window.innerWidth - this.vertCodeEnd
+            } else {
+              return window.innerWidth
+            }
+        }
+      }
+    },
+
     showHelpText: {
       get: function () {
         return this.showHelp
@@ -201,55 +271,54 @@ export default {
       }
     },
 
-    resultBoxWidth: function () {
-      if (this.vertView) {
-        if (this.vertCodeEnd > 0) {
-          return window.innerWidth - this.vertCodeEnd
-        } else {
-          return window.innerWidth
-        }
-      } else {
-        return window.innerWidth
-      }
-    },
-
     aceHeight: function (fullView) {
       const totalEditors = this.showHTML + this.showCSS + this.showJS
-      if (this.vertView) {
+      if (this.view === 'vertical') {
         if (fullView) {
-          return '80vh'
+          return '90vh'
         } else {
           return String(100 / totalEditors) + 'vh'
         }
-      } else {
+      } else if (this.view === 'horizontal') {
         if (this.horizCodeEnd > 0) {
           return String(this.horizCodeEnd) + 'px'
         } else {
           return '40vh'
         }
+      } else {
+        return '90vh'
       }
     },
 
     aceWidth: function () {
       const totalEditors = this.showHTML + this.showCSS + this.showJS
-      if (this.vertView) {
+      if (this.view === 'vertical') {
         if (this.vertCodeEnd > 0) {
           return String(this.vertCodeEnd) + 'px'
         } else {
           return '30vw'
         }
-      } else {
+      } else if (this.view === 'horizontal') {
         return String(100 / totalEditors) + 'vw'
-      }
-    },
-
-    codeBlockWidth: function () {
-      if (this.vertView) {
-        return this.aceWidth
       } else {
-        return '100vw'
+        if (this.vertCodeEnd > 0) {
+          return String(this.vertCodeEnd / totalEditors) + 'px'
+        } else {
+          return '25vw'
+        }
       }
     }
+
+    // codeBlockWidth: function () {
+    //   if (this.view === 'vertical') {
+    //     return this.aceWidth
+    //   } else if (this.view === 'horizontal') {
+    //     return '100vw'
+    //   } else {
+    //     const totalEditors = this.showHTML + this.showCSS + this.showJS
+    //     return String(100 / totalEditors) + 'vw'
+    //   }
+    // }
   },
   components: {
     AceEditor,
@@ -319,7 +388,15 @@ export default {
         this.getSelectedCode(codeId)
       }
     },
-
+    changeView: function () {
+      if (this.view === 'vertical') {
+        this.view = 'horizontal'
+      } else if (this.view === 'horizontal') {
+        this.view = 'stack'
+      } else {
+        this.view = 'vertical'
+      }
+    },
     getSelectedCode: async function (id) {
       this.updateSelectedCode(id)
       const selectedCodeId = id
@@ -448,8 +525,6 @@ export default {
     this.showHTML = !!this.pageContent.code_2
     this.showCSS = !!this.pageContent.code_3
     this.showJS = !!this.pageContent.code_4
-
-    // this.vertView = this.fullViewHtml || this.fullViewCss || this.fullViewJs
   }
 }
 
@@ -460,29 +535,12 @@ export default {
 .topClass {
   z-index: 9;
 }
-.outerBoxVert {
+.flexBox {
     display: flex;
 }
 
-.outerBoxHor {
+.gridBox {
     display: grid;
-}
-
-.vertCode {
-    /* width: 30vw; */
-    display: grid;
-    transition: width 1s linear ease-in-out;
-    /* min-height: 30vh; */
-}
-.vertResult {
-    /* width: 70vw; */
-    display: grid;
-    transition: width 1s linear ease-in-out;
-}
-.horView {
-    /* width: 100vw; */
-    display: flex;
-    /* min-height: 50vh; */
 }
 
 .horResult {
@@ -499,11 +557,6 @@ export default {
     color: darkslateblue;
     padding-left: 1em;
 }
-.codeBox {
-    background: darkslateblue;
-    /* width: 100vw; */
-}
-
 .box1, .box2, .box3 {
     margin: .1em;
     color: cornsilk;

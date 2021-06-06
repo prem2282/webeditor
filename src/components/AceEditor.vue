@@ -53,7 +53,7 @@
       :lang=this.editorBox
       theme="monokai"
       :width=this.width
-      :height=this.vertView?this.height_:this.height
+      :height="this.view === 'vertical'? this.height_ : this.height"
       :options="{
         enableBasicAutocompletion: true,
         enableLiveAutocompletion: true,
@@ -75,13 +75,12 @@
       ]"
     />
     </div>
-  <q-separator v-if="vertView" else size='15px' color='black' v-touch-pan.vertical.prevent.mouse="heightAdjuster"/>
+  <q-separator class="seperator" v-if="view==='vertical'" else size='15px' color='black' v-touch-pan.vertical.prevent.mouse="heightAdjuster"/>
   </div>
 
 </template>
 
 <script>
-// import { vertView } from 'src/store/editorData/getters'
 
 import AceEditor from 'vuejs-ace-editor'
 import { mapActions } from 'vuex'
@@ -102,7 +101,7 @@ export default {
     }
   },
 
-  props: ['pageContent', 'editorBox', 'vertView', 'width', 'height', 'fullView'],
+  props: ['pageContent', 'editorBox', 'view', 'width', 'height', 'fullView'],
   components: {
     AceEditor
   },
@@ -182,8 +181,8 @@ export default {
         const className = this.editorBox + 'box'
         this.codeBoxHeight = document.getElementById(className).offsetHeight
       } else {
-        const headerBoxHeight = document.getElementsByClassName('aceHeading')[0].offsetHeight
-        this.adjustedHeight = this.codeBoxHeight - headerBoxHeight + info.offset.y
+        // const headerBoxHeight = document.getElementsByClassName('aceHeading')[0].offsetHeight
+        this.adjustedHeight = this.codeBoxHeight + info.offset.y
       }
     },
     editorInit: function () {
@@ -193,20 +192,6 @@ export default {
       require('brace/mode/css')
       require('brace/theme/monokai')
       // require('brace/snippets/javascript') // snippet
-    },
-    setHeightUp: function () {
-      if (this.vertHeight < 100) {
-        this.vertHeight = this.vertHeight + 20
-      } else {
-        this.vertHeight = 90
-      }
-    },
-    setHeightDown: function () {
-      if (this.vertHeight > 20) {
-        this.vertHeight = this.vertHeight - 20
-      } else {
-        this.vertHeight = 20
-      }
     },
     clearBox: function () {
       this.stepView = false
@@ -267,4 +252,8 @@ export default {
 </script>
 
 <style scoped>
+
+.seperator {
+  cursor: hand;
+}
 </style>
