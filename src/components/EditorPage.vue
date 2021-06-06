@@ -416,14 +416,12 @@ export default {
       this.vertCodeEnd = info.position.left
     },
     handlePanHorizBlock: function ({ evt, ...info }) {
-      console.log(info)
       if (info.isFirst) {
         this.codeBoxHeight = document.getElementsByClassName('codeBox')[0].offsetHeight
       } else {
         const headerBoxHeight = document.getElementsByClassName('aceHeading')[0].offsetHeight
         this.horizCodeEnd = this.codeBoxHeight - headerBoxHeight + info.offset.y
       }
-      console.log(this.horizCodeEnd)
     },
 
     updatedMessage (message, success) {

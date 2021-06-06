@@ -178,7 +178,6 @@ export default {
       console.log('dummy submit')
     },
     heightAdjuster: function ({ evt, ...info }) {
-      console.log(info)
       if (info.isFirst) {
         const className = this.editorBox + 'box'
         this.codeBoxHeight = document.getElementById(className).offsetHeight
@@ -186,7 +185,6 @@ export default {
         const headerBoxHeight = document.getElementsByClassName('aceHeading')[0].offsetHeight
         this.adjustedHeight = this.codeBoxHeight - headerBoxHeight + info.offset.y
       }
-      console.log(this.adjustedHeight)
     },
     editorInit: function () {
       require('brace/ext/language_tools') // language extension prerequsite...
