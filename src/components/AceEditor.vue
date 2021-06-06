@@ -1,7 +1,7 @@
 <template>
   <div>
   <div class='row'>
-    <div class='col'>
+    <div class='aceHeading col'>
         <q-btn dense :label="editorBox" class='float-left q-mr-lg' color="transparent">
         </q-btn>
         <q-btn
@@ -42,19 +42,18 @@
         content-class="bg-black">undo last step</q-tooltip>
         </q-btn>
       <div class='float-right'>
-        <q-btn dense v-show="vertView" @click='setHeightUp()'  icon='open_in_full' />
-        <q-btn dense v-show="vertView" @click='setHeightDown()'  icon='close_fullscreen'/>
       </div>
     </div>
   </div>
   <div class="container">
     <AceEditor
+      :id = "this.editorBox + 'box'"
       v-model="mycontent"
       @init="editorInit"
       :lang=this.editorBox
       theme="monokai"
       :width=this.width
-      :height=this.height_
+      :height=this.vertView?this.height_:this.height
       :options="{
         enableBasicAutocompletion: true,
         enableLiveAutocompletion: true,
@@ -76,11 +75,13 @@
       ]"
     />
     </div>
+  <q-separator v-if="vertView" else size='15px' color='black' v-touch-pan.vertical.prevent.mouse="heightAdjuster"/>
   </div>
+
 </template>
 
 <script>
-import { vertView } from 'src/store/editorData/getters'
+// import { vertView } from 'src/store/editorData/getters'
 
 import AceEditor from 'vuejs-ace-editor'
 import { mapActions } from 'vuex'
@@ -92,24 +93,24 @@ export default {
       showingLines: [],
       showLine: [],
       lines: [],
-      height: 40,
+      vertHeight: 40,
       stepView: false,
       splitted: false,
-      clearView: false
+      clearView: false,
+      codeBoxHeight: 0,
+      adjustedHeight: 0
     }
   },
 
-  props: ['pageContent', 'editorBox', 'vertView', 'width', 'fullView'],
+  props: ['pageContent', 'editorBox', 'vertView', 'width', 'height', 'fullView'],
   components: {
     AceEditor
   },
   computed: {
     height_: {
       get: function () {
-        if (!vertView) {
-          return '45vh'
-        } else if (this.height) {
-          return String(this.height) + 'vh'
+        if (this.adjustedHeight > 0) {
+          return this.adjustedHeight + 'px'
         } else {
           return '40vh'
         }
@@ -176,6 +177,17 @@ export default {
     dataSumit: function () {
       console.log('dummy submit')
     },
+    heightAdjuster: function ({ evt, ...info }) {
+      console.log(info)
+      if (info.isFirst) {
+        const className = this.editorBox + 'box'
+        this.codeBoxHeight = document.getElementById(className).offsetHeight
+      } else {
+        const headerBoxHeight = document.getElementsByClassName('aceHeading')[0].offsetHeight
+        this.adjustedHeight = this.codeBoxHeight - headerBoxHeight + info.offset.y
+      }
+      console.log(this.adjustedHeight)
+    },
     editorInit: function () {
       require('brace/ext/language_tools') // language extension prerequsite...
       require('brace/mode/html')
@@ -185,17 +197,17 @@ export default {
       // require('brace/snippets/javascript') // snippet
     },
     setHeightUp: function () {
-      if (this.height < 100) {
-        this.height = this.height + 20
+      if (this.vertHeight < 100) {
+        this.vertHeight = this.vertHeight + 20
       } else {
-        this.height = 90
+        this.vertHeight = 90
       }
     },
     setHeightDown: function () {
-      if (this.height > 20) {
-        this.height = this.height - 20
+      if (this.vertHeight > 20) {
+        this.vertHeight = this.vertHeight - 20
       } else {
-        this.height = 20
+        this.vertHeight = 20
       }
     },
     clearBox: function () {

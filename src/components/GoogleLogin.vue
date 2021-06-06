@@ -1,17 +1,19 @@
 <template>
-<div class="row justify-center q-pa-lg q-ma-lg">
-    <h3 class='justify-center col-8'>Welcome to Skill Buddy!</h3>
-    <q-btn class= 'col-8' color="primary"
-    label="Login with Google"
-    v-if="!signedIn"
-    @click="login()"
-    />
-    <q-btn color="primary"
-    label="SignOut"
-    v-else
-    @click="logout()"
-    />
-</div>
+  <div class='container'>
+      <div class='text-h2 justify-center'>Welcome to Skill Buddy!</div>
+      <div class='text-h6'>Learn with ease</div>
+      <div class='text-h6'>Practice on the fly</div>
+      <q-btn class= 'text-h5 q-ma-md' color="primary"
+      label="Login with Google"
+      v-if="!signedIn"
+      @click="login()"
+      />
+      <q-btn color="primary"
+      label="SignOut"
+      v-else
+      @click="logout()"
+      />
+  </div>
 </template>
 
 <script>
@@ -92,3 +94,15 @@ export default {
 }
 
 </script>
+
+<style scoped>
+
+.container {
+  height: 100vh;
+  background: black;
+  color: azure;
+  justify-content: center;
+  align-items: center;
+}
+
+</style>

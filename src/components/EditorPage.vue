@@ -110,8 +110,8 @@
 
         </q-header>
         <div :class="vertView?'outerBoxVert':'outerBoxHor'" v-if="!showHelp">
-            <div v-show="showCodeBlocks" class="codeBox" :class="vertView?'vertView':'horView'">
-                <div v-if="showHTML" class="box1 bg-red-8" :class="htmlBoxClass">
+            <div v-show="showCodeBlocks" class="codeBox" :style="width=codeBlockWidth" :class="vertView?'vertCode':'horView'">
+                <div v-if="showHTML" class="box1 bg-red-8" :class="!showHTML ? 'boxclose':''">
                   <AceEditor
                       :pageContent= this.pageContent
                       editorBox = 'html'
@@ -120,6 +120,7 @@
                       :width = this.aceWidth
                   />
                 </div>
+
                 <div v-if="showCSS" class="box2 bg-cyan-8" :class="!showCSS ? 'boxclose':''">
                     <AceEditor
                         :pageContent= this.pageContent
@@ -139,10 +140,10 @@
                   />
                 </div>
             </div>
-            <q-separator v-touch-pan.horizontal.prevent.mouse="handlePan" class=""
-            />
+            <q-separator v-if="vertView" vertical size='10px' color='black' v-touch-pan.horizontal.prevent.mouse="handlePanVertBlock"/>
+            <q-separator else size='15px' color='black' v-touch-pan.vertical.prevent.mouse="handlePanHorizBlock"/>
             <div>
-                <iframe class="resultBox" :width="resultBoxWidth" :class="vertView?'vertView':'horView'" :srcDoc="this.outputValue" frameborder="0"></iframe>
+                <iframe class="resultBox" :width="resultBoxWidth" :class="vertView?'vertResult':'horResult'" :srcDoc="this.outputValue" frameborder="0"></iframe>
             </div>
         </div>
         <div v-else class="emptyback"></div>
@@ -172,6 +173,9 @@ export default {
       showCdn: false,
       vertView: false,
       showProfile: false,
+      vertCodeEnd: 0,
+      horizCodeEnd: 0,
+      codeBoxHeight: 0,
       dummyKey: process.env.VUE_CLI_DUMMY_KEY
     }
   },
@@ -199,9 +203,13 @@ export default {
 
     resultBoxWidth: function () {
       if (this.vertView) {
-        return '50vw'
+        if (this.vertCodeEnd > 0) {
+          return window.innerWidth - this.vertCodeEnd
+        } else {
+          return window.innerWidth
+        }
       } else {
-        return '100vw'
+        return window.innerWidth
       }
     },
 
@@ -209,25 +217,37 @@ export default {
       const totalEditors = this.showHTML + this.showCSS + this.showJS
       if (this.vertView) {
         if (fullView) {
-          if (totalEditors > 1) {
-            return '70vh'
-          } else {
-            return '80vh'
-          }
+          return '80vh'
         } else {
           return String(100 / totalEditors) + 'vh'
         }
       } else {
-        return '40vh'
+        if (this.horizCodeEnd > 0) {
+          return String(this.horizCodeEnd) + 'px'
+        } else {
+          return '40vh'
+        }
       }
     },
 
     aceWidth: function () {
       const totalEditors = this.showHTML + this.showCSS + this.showJS
       if (this.vertView) {
-        return '50vw'
+        if (this.vertCodeEnd > 0) {
+          return String(this.vertCodeEnd) + 'px'
+        } else {
+          return '30vw'
+        }
       } else {
         return String(100 / totalEditors) + 'vw'
+      }
+    },
+
+    codeBlockWidth: function () {
+      if (this.vertView) {
+        return this.aceWidth
+      } else {
+        return '100vw'
       }
     }
   },
@@ -391,17 +411,19 @@ export default {
     saveHelpText: function () {
     },
 
-    handlePan: function ({ evt, ...info }) {
-      const elementBox = document.getElementsByClassName('resultBox')[0]
-      console.log(elementBox.offsetHeight)
-      console.log(info.offset.x)
+    handlePanVertBlock: function ({ evt, ...info }) {
+      // const elementBox = document.getElementsByClassName('resultBox')[0]
+      this.vertCodeEnd = info.position.left
+    },
+    handlePanHorizBlock: function ({ evt, ...info }) {
+      console.log(info)
       if (info.isFirst) {
-        console.log('isFirst')
-        console.log(info)
-      } else if (info.isFinal) {
-        console.log('isFinal')
-        console.log(info.offset.x)
+        this.codeBoxHeight = document.getElementsByClassName('codeBox')[0].offsetHeight
+      } else {
+        const headerBoxHeight = document.getElementsByClassName('aceHeading')[0].offsetHeight
+        this.horizCodeEnd = this.codeBoxHeight - headerBoxHeight + info.offset.y
       }
+      console.log(this.horizCodeEnd)
     },
 
     updatedMessage (message, success) {
@@ -448,13 +470,24 @@ export default {
     display: grid;
 }
 
-.vertView {
-    width: 50vw;
+.vertCode {
+    /* width: 30vw; */
     display: grid;
     transition: width 1s linear ease-in-out;
     /* min-height: 30vh; */
 }
+.vertResult {
+    /* width: 70vw; */
+    display: grid;
+    transition: width 1s linear ease-in-out;
+}
 .horView {
+    /* width: 100vw; */
+    display: flex;
+    /* min-height: 50vh; */
+}
+
+.horResult {
     width: 100vw;
     display: flex;
     /* min-height: 50vh; */
@@ -532,10 +565,10 @@ h6{
 
 .resultBox{
     background: whitesmoke;
-    min-height: 40vh;
+    min-height: 50vh;
     height: 100%;
-    padding: 1em;
-    border-left: solid 5px  rgb(31, 30, 30);;
+    padding: .5em;
+    border-left: solid 0px  rgb(31, 30, 30);;
     font-family: Arial, Helvetica, sans-serif;
 
 }
