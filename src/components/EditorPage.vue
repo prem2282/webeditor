@@ -141,7 +141,7 @@
                 </div>
             </div>
             <q-separator v-if="view !== 'horizontal'" vertical size='10px' color='black' v-touch-pan.horizontal.prevent.mouse="handlePanVertBlock"/>
-            <q-separator else size='15px' color='black' v-touch-pan.vertical.prevent.mouse="handlePanHorizBlock"/>
+            <q-separator else size='10px' color='black' v-touch-pan.vertical.prevent.mouse="handlePanHorizBlock"/>
             <div>
                 <iframe class="resultBox" :width="resultBoxWidth" :class="resultBoxClass" :srcDoc="this.outputValue" frameborder="0"></iframe>
             </div>
@@ -171,7 +171,7 @@ export default {
       showJS: false,
       showTitle: false,
       showCdn: false,
-      view: 'horizontal',
+      view: 'stack',
       showProfile: false,
       vertCodeEnd: 0,
       horizCodeEnd: 0,
@@ -233,7 +233,7 @@ export default {
         switch (this.view) {
           case 'vertical':
             if (this.vertCodeEnd > 0) {
-              return window.innerWidth - this.vertCodeEnd
+              return window.innerWidth - this.vertCodeEnd - 10
             } else {
               return window.innerWidth
             }
@@ -241,13 +241,13 @@ export default {
             return window.innerWidth
           case 'stack':
             if (this.vertCodeEnd > 0) {
-              return window.innerWidth - this.vertCodeEnd
+              return window.innerWidth - this.vertCodeEnd - 10
             } else {
               return window.innerWidth
             }
           default:
             if (this.vertCodeEnd > 0) {
-              return window.innerWidth - this.vertCodeEnd
+              return window.innerWidth - this.vertCodeEnd - 10
             } else {
               return window.innerWidth
             }

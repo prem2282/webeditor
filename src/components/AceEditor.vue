@@ -7,8 +7,8 @@
         <q-btn
           class='q-mr-sm'
           rounded
+          unelevated
           dense
-          glossy
           @click="clearBox()"
           :icon="clearView?'replay':'delete_sweep'">
           <q-tooltip
@@ -18,9 +18,9 @@
         </q-btn>
         <q-btn
           class='q-mr-sm'
+          unelevated
           rounded
           dense
-          glossy
           @click="stepInto()"
           icon='redo'>
           <q-tooltip
@@ -31,15 +31,39 @@
         <q-btn
         v-if="stepView & showingLines.length > 0"
         class='q-mr-sm'
+        unelevated
         rounded
         dense
-        glossy
         @click="undoStepInto()"
         icon='undo'>
         <q-tooltip
         anchor="top middle"
         self="bottom middle"
         content-class="bg-black">undo last step</q-tooltip>
+        </q-btn>
+        <q-btn
+        class='float-right'
+        unelevated
+        rounded
+        dense
+        @click="decreaseFontSize()"
+        icon='zoom_out'>
+        <q-tooltip
+        anchor="top middle"
+        self="bottom middle"
+        content-class="bg-black">reduce font size</q-tooltip>
+        </q-btn>
+        <q-btn
+        class='float-right'
+        unelevated
+        rounded
+        dense
+        @click="increaseFontSize()"
+        icon='zoom_in'>
+        <q-tooltip
+        anchor="top middle"
+        self="bottom middle"
+        content-class="bg-black">increase font size</q-tooltip>
         </q-btn>
       <div class='float-right'>
       </div>
@@ -57,7 +81,7 @@
       :options="{
         enableBasicAutocompletion: true,
         enableLiveAutocompletion: true,
-        fontSize: '10pt',
+        fontSize: this.fontSizePt,
         highlightActiveLine: true,
         enableSnippets: false,
         showLineNumbers: true,
@@ -97,7 +121,8 @@ export default {
       splitted: false,
       clearView: false,
       codeBoxHeight: 0,
-      adjustedHeight: 0
+      adjustedHeight: 0,
+      fontSize: 10
     }
   },
 
@@ -154,6 +179,9 @@ export default {
         }
         this.updatePageContent(payload)
       }
+    },
+    fontSizePt: function () {
+      return this.fontSize + 'pt'
     }
   },
   mounted: function () {
@@ -184,6 +212,12 @@ export default {
         // const headerBoxHeight = document.getElementsByClassName('aceHeading')[0].offsetHeight
         this.adjustedHeight = this.codeBoxHeight + info.offset.y
       }
+    },
+    increaseFontSize: function () {
+      this.fontSize = this.fontSize + 1
+    },
+    decreaseFontSize: function () {
+      this.fontSize = this.fontSize - 1
     },
     editorInit: function () {
       require('brace/ext/language_tools') // language extension prerequsite...
